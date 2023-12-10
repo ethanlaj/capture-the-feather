@@ -1,0 +1,17 @@
+version: '2.23.3'
+
+services:
+  db:
+    image: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ROOT_PWD
+      MYSQL_DATABASE: capture-the-feather
+    ports:
+      - "1459:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+
+volumes:
+  db_data:
+    driver: local

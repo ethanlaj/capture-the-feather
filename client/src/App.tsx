@@ -1,11 +1,8 @@
 import "./App.css";
+import Home from "./pages/Home";
 
 const App = () => {
-	return (
-		<>
-			<div className="text-blue-500">Hello, there</div>
-		</>
-	);
+	return <Home />;
 };
 
 export default App;
