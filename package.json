@@ -1,0 +1,15 @@
+{
+  "name": "capture-the-feather",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "install-all": "concurrently -n root,client,server \"npm install\" \"npm install --prefix client\" \"npm install --prefix server\"",
+    "dev": "concurrently -n client,server -c magenta,blue \"npm run dev --prefix client\" \"npm run dev --prefix server\""
+  },
+  "author": "Ethan Lajeunesse",
+  "license": "ISC",
+  "dependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
