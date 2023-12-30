@@ -1,39 +1,88 @@
 import { useState } from "react";
-import { Card, Divider, Modal } from "antd";
+import { Card, Divider } from "antd";
+import ChallengeModal from "../components/ChallengeModal/ChallengeModal";
+import { Challenge, ChallengeType } from "../types/Challenge";
 
 interface Category {
 	name: string;
 	challenges: Challenge[];
 }
 
-interface Challenge {
-	id: number;
-	title: string;
-	description: string;
-}
-
 const categories: Category[] = [
 	{
 		name: "Easy",
-		challenges: [{ id: 1, title: "Challenge 1", description: "Description of Challenge 1" }],
+		challenges: [
+			{
+				id: 1,
+				title: "Challenge 1",
+				description: "Description of Challenge 1",
+				type: ChallengeType.MultipleChoice,
+				multipleChoiceOptions: [
+					{
+						id: 1,
+						value: "Choice A",
+					},
+					{
+						id: 2,
+						value: "Choice 2",
+					},
+					{
+						id: 3,
+						value: "Choice 3",
+					},
+					{
+						id: 4,
+						value: "Choice 4",
+					},
+				],
+			},
+		],
 	},
 	{
 		name: "Medium",
-		challenges: [{ id: 2, title: "Challenge 2", description: "Description of Challenge 2" }],
+		challenges: [
+			{
+				id: 2,
+				title: "Challenge 2",
+				description: "Description of Challenge 2",
+				type: ChallengeType.ShortAnswer,
+			},
+		],
 	},
 	{
 		name: "Hard",
-		challenges: [{ id: 2, title: "Challenge 3", description: "Description of Challenge 3" }],
-	},
-	{
-		name: "Expert",
-		challenges: [{ id: 2, title: "Challenge 4", description: "Description of Challenge 4" }],
+		challenges: [
+			{
+				id: 2,
+				title: "Challenge 3",
+				description: "Description of Challenge 3",
+				type: ChallengeType.MultipleChoice,
+				multipleChoiceOptions: [
+					{
+						id: 1,
+						value: "Choice 1",
+					},
+					{
+						id: 2,
+						value: "Choice 2",
+					},
+					{
+						id: 3,
+						value: "Choice 3",
+					},
+					{
+						id: 4,
+						value: "Choice 4",
+					},
+				],
+			},
+		],
 	},
 ];
 
 function ChallengesView() {
 	const [isModalOpen, setIsModalOpen] = useState(false);
-	const [selectedChallenge, setSelectedChallenge] = useState<Challenge | null>(null);
+	const [selectedChallenge, setSelectedChallenge] = useState<Challenge | undefined>();
 
 	const showModal = (challenge: Challenge) => {
 		setSelectedChallenge(challenge);
@@ -74,15 +123,12 @@ function ChallengesView() {
 					)}
 				</div>
 			))}
-			<Modal
-				title={selectedChallenge?.title}
-				open={isModalOpen}
-				onOk={handleOk}
-				onCancel={handleCancel}
-			>
-				<p>{selectedChallenge?.description}</p>
-				{/* Challenge details and submission form */}
-			</Modal>
+			<ChallengeModal
+				challenge={selectedChallenge}
+				isOpen={isModalOpen}
+				handleOk={handleOk}
+				handleCancel={handleCancel}
+			/>
 		</>
 	);
 }
