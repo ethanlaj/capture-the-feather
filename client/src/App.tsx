@@ -4,6 +4,8 @@ import Navbar from "./components/Navbar";
 import ChallengesView from "./pages/ChallengesView";
 import Home from "./pages/Home";
 import "./App.css";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
 
 const { Content } = Layout;
 
@@ -16,6 +18,8 @@ const App = () => {
 					<Routes>
 						<Route path={"/"} element={<Home />} />
 						<Route path={"/challenges"} element={<ChallengesView />} />
+						<Route path={"/login"} element={<Login />} />
+						<Route path={"/register"} element={<Register />} />
 					</Routes>
 				</Content>
 			</Layout>
