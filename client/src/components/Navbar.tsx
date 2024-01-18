@@ -9,7 +9,7 @@ const Navbar = () => {
 	const isLoggedIn = false;
 
 	const navBarLinks = {
-		"/home": "Home",
+		"/": "Home",
 		"/challenges": "Challenges",
 	};
 
