@@ -1,6 +1,6 @@
 import { Request, Response, Router } from "express";
 import errorHandler from "../middleware/errorHandler";
-import { Attempt, Challenge } from "../database/models";
+import { Attempt, Challenge, MultipleChoiceOption, ShortAnswerOption } from "../database/models";
 import { ChallengeService } from "../services/challengeService";
 import { verifyAccess } from "../middleware/verifyAccess";
 
@@ -12,10 +12,15 @@ interface ExtendedChallenge extends Challenge {
 
 router.get("/", verifyAccess, errorHandler(async (req: Request, res: Response) => {
 	const challenges = await Challenge.findAll({
-		include: [{
-			model: Attempt,
-			where: { userId: req.payload!.userId },
-		}]
+		include: [
+			{
+				model: Attempt,
+				where: { userId: req.payload!.userId },
+				required: false
+			},
+			MultipleChoiceOption,
+			ShortAnswerOption,
+		]
 	}) as ExtendedChallenge[];
 
 	for (let challenge of challenges) {

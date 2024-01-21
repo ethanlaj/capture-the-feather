@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Card, Divider } from "antd";
 import ChallengeModal from "../components/ChallengeModal/ChallengeModal";
-import { Challenge, ChallengeType } from "../types/Challenge";
+import { Challenge } from "../types/Challenge";
 import { ChallengeService } from "@/services/challengeService";
 import _ from "lodash";
 import { ClientError } from "@/types/ClientError";
@@ -21,7 +21,17 @@ function ChallengesView() {
 			try {
 				const response = await ChallengeService.getChallenges();
 				const categories = _.groupBy(response, "category");
-				console.log(categories);
+
+				const categoriesArray: Category[] = [];
+				for (const category in categories) {
+					const challenges = categories[category];
+					categoriesArray.push({
+						name: category,
+						challenges: challenges,
+					});
+				}
+
+				setCategories(categoriesArray);
 			} catch (error) {
 				console.log(error);
 				new ClientError(error).toast();
@@ -54,6 +64,7 @@ function ChallengesView() {
 						{category.challenges.map((challenge) => (
 							<Card
 								key={challenge.id}
+								extra={challenge.points}
 								title={challenge.title}
 								bordered={false}
 								style={{ width: 300, margin: "15px" }}

@@ -19,11 +19,15 @@ export class Challenge extends Model {
 	title!: string;
 
 	@AllowNull(false)
+	@Column(DataType.STRING)
+	shortDescription!: string;
+
+	@AllowNull(false)
 	@Column(DataType.TEXT('medium'))
 	description!: string;
 
 	@AllowNull(false)
-	@Column(DataType.STRING)
+	@Column(DataType.ENUM('multiple-choice', 'short-answer'))
 	type!: string;
 
 	@AllowNull(false)

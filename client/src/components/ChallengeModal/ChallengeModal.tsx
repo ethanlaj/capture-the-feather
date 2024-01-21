@@ -24,23 +24,37 @@ const ChallengeModal = ({ challenge, isOpen, handleOk, handleCancel }: Props) =>
 		handleCancel();
 	};
 
+	const handleSubmit = () => {};
+
 	if (!challenge) return null;
 
 	return (
-		<Modal title={challenge.title} open={isOpen} onOk={handleOk} onCancel={onClose}>
-			<p>{challenge.description}</p>
+		<Modal
+			title={<div className="text-center font-bold">{challenge.title}</div>}
+			open={isOpen}
+			onOk={handleOk}
+			okText="Submit"
+			onCancel={onClose}
+		>
+			<div className="flex flex-col gap-4">
+				<div className="flex justify-between">
+					<div className="text-align-end">{challenge.points} points</div>
+					<div className="text-align-end">1 attempt remaining</div>
+				</div>
 
-			{/* Challenge Types */}
-			{isMultipleChoiceChallenge(challenge) && (
-				<MultipleChoice
-					options={challenge.multipleChoiceOptions}
-					userAnswer={userAnswer}
-					handleUserAnswerChange={setUserAnswer}
-				/>
-			)}
-			{isShortAnswerChallenge(challenge) && (
-				<ShortAnswer userAnswer={userAnswer} handleUserAnswerChange={setUserAnswer} />
-			)}
+				<p className="m-0">{challenge.description}</p>
+				{/* Challenge Types */}
+				{isMultipleChoiceChallenge(challenge) && (
+					<MultipleChoice
+						options={challenge.multipleChoiceOptions}
+						userAnswer={userAnswer}
+						handleUserAnswerChange={setUserAnswer}
+					/>
+				)}
+				{isShortAnswerChallenge(challenge) && (
+					<ShortAnswer userAnswer={userAnswer} handleUserAnswerChange={setUserAnswer} />
+				)}
+			</div>
 		</Modal>
 	);
 };

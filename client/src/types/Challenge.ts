@@ -15,9 +15,13 @@ export enum ChallengeType {
 
 interface BaseChallenge {
 	id: number;
+	category: string;
 	title: string;
+	shortDescription: string;
 	description: string;
 	type: ChallengeType;
+	points: number;
+	maxAttempts: number;
 }
 
 export interface MultipleChoiceOption {
