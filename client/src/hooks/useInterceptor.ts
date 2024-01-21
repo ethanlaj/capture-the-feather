@@ -32,10 +32,9 @@ const useInterceptor = () => {
 			// Check if the error was a 401 and the request wasn't a retry
 			if (error.response?.status === 401 && !originalRequest._retry) {
 				originalRequest._retry = true;
-
 				if (!user) {
 					navigate('/login');
-					return;
+					return Promise.reject(error);
 				}
 
 				// No new token, attempt to get a new one
@@ -55,7 +54,7 @@ const useInterceptor = () => {
 					setUser(null);
 
 					navigate('/login');
-					return;
+					return Promise.reject(error);
 				}
 			}
 

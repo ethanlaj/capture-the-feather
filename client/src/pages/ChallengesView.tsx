@@ -4,6 +4,7 @@ import ChallengeModal from "../components/ChallengeModal/ChallengeModal";
 import { Challenge, ChallengeType } from "../types/Challenge";
 import { ChallengeService } from "@/services/challengeService";
 import _ from "lodash";
+import { ClientError } from "@/types/ClientError";
 
 interface Category {
 	name: string;
@@ -13,13 +14,18 @@ interface Category {
 function ChallengesView() {
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [selectedChallenge, setSelectedChallenge] = useState<Challenge | undefined>();
-	const [categories, setCategories] = useState<Challenge[]>([]);
+	const [categories, setCategories] = useState<Category[]>([]);
 
 	useEffect(() => {
 		async function getChallenges() {
-			const response = await ChallengeService.getChallenges();
-			const categories = _.groupBy(response, "category");
-			console.log(categories);
+			try {
+				const response = await ChallengeService.getChallenges();
+				const categories = _.groupBy(response, "category");
+				console.log(categories);
+			} catch (error) {
+				console.log(error);
+				new ClientError(error).toast();
+			}
 		}
 
 		getChallenges();
