@@ -1,88 +1,29 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Card, Divider } from "antd";
 import ChallengeModal from "../components/ChallengeModal/ChallengeModal";
 import { Challenge, ChallengeType } from "../types/Challenge";
+import { ChallengeService } from "@/services/challengeService";
+import _ from "lodash";
 
 interface Category {
 	name: string;
 	challenges: Challenge[];
 }
 
-const categories: Category[] = [
-	{
-		name: "Easy",
-		challenges: [
-			{
-				id: 1,
-				title: "Challenge 1",
-				description: "Description of Challenge 1",
-				type: ChallengeType.MultipleChoice,
-				multipleChoiceOptions: [
-					{
-						id: 1,
-						value: "Choice A",
-					},
-					{
-						id: 2,
-						value: "Choice 2",
-					},
-					{
-						id: 3,
-						value: "Choice 3",
-					},
-					{
-						id: 4,
-						value: "Choice 4",
-					},
-				],
-			},
-		],
-	},
-	{
-		name: "Medium",
-		challenges: [
-			{
-				id: 2,
-				title: "Challenge 2",
-				description: "Description of Challenge 2",
-				type: ChallengeType.ShortAnswer,
-			},
-		],
-	},
-	{
-		name: "Hard",
-		challenges: [
-			{
-				id: 2,
-				title: "Challenge 3",
-				description: "Description of Challenge 3",
-				type: ChallengeType.MultipleChoice,
-				multipleChoiceOptions: [
-					{
-						id: 1,
-						value: "Choice 1",
-					},
-					{
-						id: 2,
-						value: "Choice 2",
-					},
-					{
-						id: 3,
-						value: "Choice 3",
-					},
-					{
-						id: 4,
-						value: "Choice 4",
-					},
-				],
-			},
-		],
-	},
-];
-
 function ChallengesView() {
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [selectedChallenge, setSelectedChallenge] = useState<Challenge | undefined>();
+	const [categories, setCategories] = useState<Challenge[]>([]);
+
+	useEffect(() => {
+		async function getChallenges() {
+			const response = await ChallengeService.getChallenges();
+			const categories = _.groupBy(response, "category");
+			console.log(categories);
+		}
+
+		getChallenges();
+	}, []);
 
 	const showModal = (challenge: Challenge) => {
 		setSelectedChallenge(challenge);

@@ -1,16 +1,26 @@
+import { useUser } from "@/contexts/UserContext";
+import { UserService } from "@/services/userService";
 import { Button, Layout } from "antd";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 const { Header } = Layout;
 
 const Navbar = () => {
 	const location = useLocation();
+	const navigate = useNavigate();
+	const { user, setUser } = useUser();
 	const selectedKey = location.pathname;
-
-	const isLoggedIn = false;
 
 	const navBarLinks = {
 		"/": "Home",
 		"/challenges": "Challenges",
+	};
+
+	const isLoggedIn = user != null;
+
+	const logout = () => {
+		UserService.logout();
+		setUser(null);
+		navigate("/");
 	};
 
 	return (
@@ -42,8 +52,8 @@ const Navbar = () => {
 					</div>
 				) : (
 					<div className="flex gap-4 items-center">
-						<div className="text-gray-200">Welcome, User!</div>
-						<Button danger className="bg-transparent">
+						<div className="text-gray-200">Welcome, {user.name}!</div>
+						<Button danger className="bg-transparent" onClick={() => logout()}>
 							Logout
 						</Button>
 					</div>
@@ -65,7 +75,7 @@ const NavBarLink = ({ to, children, isActive }: NavBarLinkProps) => {
 	return (
 		<Link
 			className={`text-gray-400 select-none px-4 inline-block ${
-				isActive ? "bg-blue-600 text-gray-100 pointer-events-none" : "hover:text-gray-200"
+				isActive ? "bg-blue-600 text-white pointer-events-none" : "hover:text-gray-200"
 			}`}
 			to={to}
 		>

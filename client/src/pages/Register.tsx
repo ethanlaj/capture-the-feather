@@ -1,4 +1,10 @@
+import { useUser } from "@/contexts/UserContext";
+import { UserService } from "@/services/userService";
+import { ClientError } from "@/types/ClientError";
+import { ClientSuccess } from "@/types/ClientSuccess";
 import { Form, Input, Button } from "antd";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 interface FormValues {
 	name: string;
@@ -7,9 +13,46 @@ interface FormValues {
 }
 
 const Register = () => {
-	const onFinish = (values: FormValues) => {
-		console.log("Success:", values);
+	const navigate = useNavigate();
+	const { user, setUser } = useUser();
+
+	useEffect(() => {
+		if (user) {
+			navigate("/challenges");
+		}
+	}, [user, navigate]);
+
+	const onFinish = async (values: FormValues) => {
+		try {
+			const response = await UserService.register(values);
+			UserService.setAccessToken(response.accessToken);
+			UserService.setRefreshToken(response.refreshToken);
+
+			setUser(response.user);
+
+			ClientSuccess.toast("Successfully registered!");
+
+			navigate("/challenges");
+		} catch (error) {
+			console.log(error);
+			new ClientError(error).toast();
+		}
 	};
+
+	const confirmPasswordRules = [
+		{
+			required: true,
+			message: "Please confirm your password.",
+		},
+		({ getFieldValue }: { getFieldValue: (field: string) => any }) => ({
+			validator(_: any, value: string) {
+				if (!value || getFieldValue("password") === value) {
+					return Promise.resolve();
+				}
+				return Promise.reject(new Error("Your passwords must match!"));
+			},
+		}),
+	];
 
 	return (
 		<div className="bg-white px-8 py-4 m-auto max-w-5xl">
@@ -33,6 +76,14 @@ const Register = () => {
 				</Form.Item>
 
 				<Form.Item label="Password" name="password" rules={[{ required: true }]}>
+					<Input.Password />
+				</Form.Item>
+
+				<Form.Item
+					label="Confirm Password"
+					name="confirmPassword"
+					rules={confirmPasswordRules}
+				>
 					<Input.Password />
 				</Form.Item>
 

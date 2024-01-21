@@ -19,10 +19,15 @@ interface Props {
 const ChallengeModal = ({ challenge, isOpen, handleOk, handleCancel }: Props) => {
 	const [userAnswer, setUserAnswer] = useState<any>();
 
+	const onClose = () => {
+		setUserAnswer(undefined);
+		handleCancel();
+	};
+
 	if (!challenge) return null;
 
 	return (
-		<Modal title={challenge.title} open={isOpen} onOk={handleOk} onCancel={handleCancel}>
+		<Modal title={challenge.title} open={isOpen} onOk={handleOk} onCancel={onClose}>
 			<p>{challenge.description}</p>
 
 			{/* Challenge Types */}

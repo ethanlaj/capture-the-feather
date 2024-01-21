@@ -1,57 +1,84 @@
 import { Router } from "express";
 import bcrypt from "bcrypt";
 import jsonwebtoken, { JwtPayload } from "jsonwebtoken";
+import { v4 as uuidv4 } from "uuid";
 import { User } from "../database/models";
 import { requireBody } from "../middleware/requireBody";
 import { RefreshToken } from "../database/models/refreshToken";
+import errorHandler from "../middleware/errorHandler";
+import { verifyAccess } from "../middleware/verifyAccess";
 
 const router = Router();
 
-router.get("/", (req, res) => {
-	// return current user info
-});
+router.get("/", verifyAccess, errorHandler(async (req, res) => {
+	const userId = req.payload!.userId;
+	const user = User.findByPk(userId, { attributes: ['id', 'email', 'name', 'isAdmin'] });
 
-router.post("/register", requireBody(['email', 'name', 'password']), async (req, res) => {
+	return res.json(user);
+}));
+
+router.post("/register", requireBody(['email', 'name', 'password']), errorHandler(async (req, res) => {
 	const { name, password } = req.body;
 	let email = req.body.email.toLowerCase();
 
-	const existingUser = await User.findByPk(email);
+	const existingUser = await User.findOne({ where: { email } });
 	if (existingUser) {
-		res.status(400).send("User already exists");
+		res.status(400).send("A user with this email already exists");
 		return;
 	}
 
 	const hashedPassword = await hashPassword(password);
 
 	const newUser = await User.create({
+		id: uuidv4(),
 		email,
 		name,
 		passwordHash: hashedPassword,
 	});
 
-	res.status(201).json(newUser);
-});
+	const tokens = await generateTokens(newUser.id, newUser.isAdmin);
+	return res.status(200).json({
+		...tokens,
+		user: {
+			id: newUser.id,
+			email: newUser.email,
+			name: newUser.name,
+			isAdmin: newUser.isAdmin,
+		}
+	});
+}));
 
-router.post("/login", requireBody(['email', 'password']), async (req, res) => {
+router.post("/login", requireBody(['email', 'password']), errorHandler(async (req, res) => {
 	const { password } = req.body;
 	let email = req.body.email.toLowerCase();
 
-	const user = await User.findByPk(email);
+	const user = await User.findOne({ where: { email } });
 	if (!user) {
-		return res.status(401).send("Invalid email or password");
+		return res.status(400).send("Invalid email or password");
 	}
 
 	const valid = bcrypt.compare(password, user.passwordHash);
 	if (!valid) {
-		return res.status(401).send("Invalid email or password");
+		return res.status(400).send("Invalid email or password");
 	}
 
-	const tokens = await generateTokens(email);
-	return res.status(200).json(tokens);
-});
+	const tokens = await generateTokens(email, user.isAdmin);
+	return res.status(200).json({
+		...tokens,
+		user: {
+			id: user.id,
+			email: user.email,
+			name: user.name,
+			isAdmin: user.isAdmin,
+		}
+	});
+}));
 
-router.post("/refresh", requireBody(['token']), async (req, res) => {
+router.post("/refresh", errorHandler(async (req, res) => {
 	const refreshToken = req.body.token;
+	if (!refreshToken) {
+		return res.status(403).send("Invalid refresh token");
+	}
 
 	try {
 		const payload = jsonwebtoken.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET!) as JwtPayload;
@@ -63,14 +90,14 @@ router.post("/refresh", requireBody(['token']), async (req, res) => {
 
 		await refreshTokenInstance.destroy();
 
-		const tokens = await generateTokens(payload.email);
+		const tokens = await generateTokens(payload.email, payload.isAdmin);
 
 		return res.status(200).json(tokens);
 	} catch (error) {
 		console.error('Error verifying refresh token:', error);
 		return res.status(403).send("Invalid refresh token");
 	}
-});
+}));
 
 async function hashPassword(password: string) {
 	try {
@@ -84,9 +111,9 @@ async function hashPassword(password: string) {
 	}
 }
 
-async function generateTokens(email: string, isAdmin: boolean = false) {
+async function generateTokens(userId: string, isAdmin: boolean = false) {
 	const payload = {
-		email,
+		userId,
 		isAdmin,
 	}
 

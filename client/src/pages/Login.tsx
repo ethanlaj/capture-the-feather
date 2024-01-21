@@ -1,4 +1,10 @@
+import { useUser } from "@/contexts/UserContext";
+import { UserService } from "@/services/userService";
+import { ClientError } from "@/types/ClientError";
+import { ClientSuccess } from "@/types/ClientSuccess";
 import { Form, Input, Button } from "antd";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 interface FormValues {
 	email: string;
@@ -6,8 +12,30 @@ interface FormValues {
 }
 
 const Login = () => {
-	const onFinish = (values: FormValues) => {
-		console.log("Success:", values);
+	const navigate = useNavigate();
+	const { user, setUser } = useUser();
+
+	useEffect(() => {
+		if (user) {
+			navigate("/challenges");
+		}
+	}, [user, navigate]);
+
+	const onFinish = async (values: FormValues) => {
+		try {
+			const response = await UserService.login(values);
+			UserService.setAccessToken(response.accessToken);
+			UserService.setRefreshToken(response.refreshToken);
+
+			setUser(response.user);
+
+			ClientSuccess.toast("Successfully logged in!");
+
+			navigate("/challenges");
+		} catch (error) {
+			console.log(error);
+			new ClientError(error).toast();
+		}
 	};
 
 	return (
