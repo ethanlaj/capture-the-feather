@@ -28,6 +28,8 @@ const ChallengeModal = ({ challenge, isOpen, handleOk, handleCancel }: Props) =>
 
 	if (!challenge) return null;
 
+	const attemptsLeft = challenge.maxAttempts - challenge.attempts.length;
+
 	return (
 		<Modal
 			title={<div className="text-center font-bold">{challenge.title}</div>}
@@ -39,7 +41,9 @@ const ChallengeModal = ({ challenge, isOpen, handleOk, handleCancel }: Props) =>
 			<div className="flex flex-col gap-4">
 				<div className="flex justify-between">
 					<div className="text-align-end">{challenge.points} points</div>
-					<div className="text-align-end">1 attempt remaining</div>
+					<div className="text-align-end">
+						{attemptsLeft}/{challenge.maxAttempts} attempts remaining
+					</div>
 				</div>
 
 				<p className="m-0">{challenge.description}</p>

@@ -1,3 +1,5 @@
+import { Attempt } from "./Attempt";
+
 export type Challenge = MultipleChoiceChallenge | ShortAnswerChallenge;
 
 export interface MultipleChoiceChallenge extends BaseChallenge {
@@ -22,6 +24,7 @@ interface BaseChallenge {
 	type: ChallengeType;
 	points: number;
 	maxAttempts: number;
+	attempts: Attempt[];
 }
 
 export interface MultipleChoiceOption {

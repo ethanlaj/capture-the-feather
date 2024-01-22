@@ -90,7 +90,7 @@ router.post("/refresh", errorHandler(async (req, res) => {
 
 		await refreshTokenInstance.destroy();
 
-		const tokens = await generateTokens(payload.email, payload.isAdmin);
+		const tokens = await generateTokens(payload.userId, payload.isAdmin);
 
 		return res.status(200).json(tokens);
 	} catch (error) {

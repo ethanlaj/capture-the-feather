@@ -6,11 +6,13 @@ import { User } from './user';
 @Table
 export class Attempt extends Model {
 	@PrimaryKey
+	@Column(DataType.UUID)
+	id!: string;
+
 	@ForeignKey(() => User)
 	@Column(DataType.UUID)
 	userId!: string;
 
-	@PrimaryKey
 	@ForeignKey(() => Challenge)
 	@Column(DataType.UUID)
 	challengeId!: string;

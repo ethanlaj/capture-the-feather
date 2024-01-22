@@ -34,7 +34,7 @@ const useInterceptor = () => {
 				originalRequest._retry = true;
 				if (!user) {
 					navigate('/login');
-					return Promise.reject(error);
+					return Promise.reject(null); // Throw null - we don't want to show an error message
 				}
 
 				// No new token, attempt to get a new one
@@ -54,7 +54,7 @@ const useInterceptor = () => {
 					setUser(null);
 
 					navigate('/login');
-					return Promise.reject(error);
+					return Promise.reject(null); // Throw null - we don't want to show an error message
 				}
 			}
 

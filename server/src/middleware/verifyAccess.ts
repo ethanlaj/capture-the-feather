@@ -12,11 +12,19 @@ export function verifyAccess(req: Request, res: Response, next: NextFunction) {
 		return res.status(401).send("Unauthorized");
 	}
 
-	const payload = jsonwebtoken.verify(token, process.env.ACCESS_TOKEN_SECRET!) as JwtPayload;
-	if (!payload) {
-		return res.status(401).send("Unauthorized");
-	}
+	jsonwebtoken.verify(token, process.env.ACCESS_TOKEN_SECRET!, (err, payload) => {
+		if (err) {
+			console.log({ err })
+			return res.status(401).send("Unauthorized");
+		}
 
-	req.payload = payload;
-	next();
+		req.payload = payload as JwtPayload;
+
+		if (!req.payload?.userId) {
+			return res.status(401).send("Unauthorized");
+		}
+
+		next();
+	});
+
 }
