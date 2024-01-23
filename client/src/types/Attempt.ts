@@ -1,5 +1,5 @@
 export interface Attempt {
-	id: string;
+	id: number;
 	userId: string;
 	challengeId: string;
 	userAnswer: string;

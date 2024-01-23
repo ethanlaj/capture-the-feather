@@ -1,10 +1,11 @@
-import { Table, Column, Model, AllowNull, PrimaryKey, DataType, Default, Unique } from 'sequelize-typescript';
+import { Table, Column, Model, AllowNull, PrimaryKey, DataType, Default, Unique, AutoIncrement } from 'sequelize-typescript';
 
 @Table
 export class User extends Model {
 	@PrimaryKey
-	@Column(DataType.UUID)
-	id!: string;
+	@AutoIncrement
+	@Column(DataType.INTEGER)
+	id!: number;
 
 	@AllowNull(false)
 	@Unique

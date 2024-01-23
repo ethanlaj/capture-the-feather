@@ -1,4 +1,4 @@
-import { Table, Column, Model, AllowNull, PrimaryKey, DataType, HasMany } from 'sequelize-typescript';
+import { Table, Column, Model, AllowNull, PrimaryKey, DataType, HasMany, AutoIncrement } from 'sequelize-typescript';
 import { MultipleChoiceOption } from './multipleChoiceOption';
 import { ShortAnswerOption } from './shortAnswerOption';
 import { Attempt } from './attempt';
@@ -6,9 +6,9 @@ import { Attempt } from './attempt';
 @Table
 export class Challenge extends Model {
 	@PrimaryKey
-	@AllowNull(false)
-	@Column(DataType.UUID)
-	id!: string;
+	@AutoIncrement
+	@Column(DataType.INTEGER)
+	id!: number;
 
 	@AllowNull(false)
 	@Column(DataType.STRING)

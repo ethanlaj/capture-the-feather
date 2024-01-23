@@ -1,13 +1,12 @@
 'use strict';
-const { v4: uuidv4 } = require("uuid")
 
 module.exports = {
 	async up(queryInterface, Sequelize) {
-		const mcUuid = uuidv4();
+		const mcChallengeId = 1;
 
 		await queryInterface.bulkInsert('Challenges', [
 			{
-				id: mcUuid,
+				id: mcChallengeId,
 				category: 'Mathematics',
 				title: 'Basic Algebra',
 				shortDescription: 'Solve linear equations',
@@ -19,7 +18,7 @@ module.exports = {
 				updatedAt: new Date()
 			},
 			{
-				id: uuidv4(),
+				id: 2,
 				category: 'Science',
 				title: 'Chemical Elements',
 				shortDescription: 'Identify elements from the periodic table',
@@ -34,32 +33,32 @@ module.exports = {
 
 		await queryInterface.bulkInsert('MultipleChoiceOptions', [
 			{
-				id: uuidv4(),
-				challengeId: mcUuid,
+				id: 1,
+				challengeId: mcChallengeId,
 				value: "A",
 				isCorrect: false,
 				createdAt: new Date(),
 				updatedAt: new Date()
 			},
 			{
-				id: uuidv4(),
-				challengeId: mcUuid,
+				id: 2,
+				challengeId: mcChallengeId,
 				value: "B",
 				isCorrect: false,
 				createdAt: new Date(),
 				updatedAt: new Date()
 			},
 			{
-				id: uuidv4(),
-				challengeId: mcUuid,
+				id: 3,
+				challengeId: mcChallengeId,
 				value: "C",
 				isCorrect: true,
 				createdAt: new Date(),
 				updatedAt: new Date()
 			},
 			{
-				id: uuidv4(),
-				challengeId: mcUuid,
+				id: 4,
+				challengeId: mcChallengeId,
 				value: "D",
 				isCorrect: false,
 				createdAt: new Date(),

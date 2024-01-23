@@ -1,7 +1,6 @@
 import { Router } from "express";
 import bcrypt from "bcrypt";
 import jsonwebtoken, { JwtPayload } from "jsonwebtoken";
-import { v4 as uuidv4 } from "uuid";
 import { User } from "../database/models";
 import { requireBody } from "../middleware/requireBody";
 import { RefreshToken } from "../database/models/refreshToken";
@@ -30,7 +29,6 @@ router.post("/register", requireBody(['email', 'name', 'password']), errorHandle
 	const hashedPassword = await hashPassword(password);
 
 	const newUser = await User.create({
-		id: uuidv4(),
 		email,
 		name,
 		passwordHash: hashedPassword,
@@ -57,7 +55,7 @@ router.post("/login", requireBody(['email', 'password']), errorHandler(async (re
 		return res.status(400).send("Invalid email or password");
 	}
 
-	const valid = bcrypt.compare(password, user.passwordHash);
+	const valid = await bcrypt.compare(password, user.passwordHash);
 	if (!valid) {
 		return res.status(400).send("Invalid email or password");
 	}
@@ -111,7 +109,7 @@ async function hashPassword(password: string) {
 	}
 }
 
-async function generateTokens(userId: string, isAdmin: boolean = false) {
+async function generateTokens(userId: number, isAdmin: boolean = false) {
 	const payload = {
 		userId,
 		isAdmin,
