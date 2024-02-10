@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
+import { useWindowSize } from "@react-hook/window-size";
 import { Card, Divider } from "antd";
 import ChallengeModal from "../components/ChallengeModal/ChallengeModal";
 import { Challenge } from "../types/Challenge";
 import { ChallengeService } from "@/services/challengeService";
 import _ from "lodash";
 import { ClientError } from "@/types/ClientError";
+import Confetti from "react-confetti";
 
 interface Category {
 	name: string;
@@ -15,6 +17,8 @@ function ChallengesView() {
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [selectedChallenge, setSelectedChallenge] = useState<Challenge | undefined>();
 	const [categories, setCategories] = useState<Category[]>([]);
+	const [isConfettiActive, setIsConfettiActive] = useState(false);
+	const [width, height] = useWindowSize();
 
 	useEffect(() => {
 		async function getChallenges() {
@@ -76,6 +80,13 @@ function ChallengesView() {
 		if (challenge.isSolvedOrExhausted) {
 			setIsModalOpen(false);
 		}
+
+		if (challenge.isSolved) {
+			setIsConfettiActive(true);
+			setTimeout(() => {
+				setIsConfettiActive(false);
+			}, 3000);
+		}
 	};
 
 	const handleCancel = () => {
@@ -116,6 +127,7 @@ function ChallengesView() {
 				onChallengeAttempted={handleChallengeUpdated}
 				handleCancel={handleCancel}
 			/>
+			{isConfettiActive && <Confetti recycle={false} width={width} height={height} />}
 		</>
 	);
 }

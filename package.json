@@ -10,6 +10,7 @@
   "author": "Ethan Lajeunesse",
   "license": "ISC",
   "dependencies": {
+    "@react-hook/window-size": "^3.1.1",
     "@types/cors": "^2.8.17",
     "@types/lodash": "^4.14.202",
     "@types/uuid": "^9.0.7",
