@@ -18,8 +18,16 @@ export class ShortAnswerOption extends Model {
 	value!: string;
 
 	@AllowNull(false)
+	@Column(DataType.ENUM('static', 'regex'))
+	matchMode!: 'static' | 'regex';
+
+	@AllowNull(true)
 	@Column(DataType.STRING)
-	matchMode!: string;
+	regExp!: string;
+
+	@AllowNull(false)
+	@Column(DataType.BOOLEAN)
+	isCaseSensitive!: boolean;
 
 	@BelongsTo(() => Challenge, { onDelete: 'CASCADE' })
 	challenge!: Challenge;

@@ -4,5 +4,5 @@ export interface Attempt {
 	challengeId: string;
 	userAnswer: string;
 	isCorrect: boolean;
-	mutlipleChoiceOptionId: string;
+	multipleChoiceOptionId: string;
 }

@@ -14,6 +14,7 @@ module.exports = {
 				type: 'multiple-choice',
 				points: 10,
 				maxAttempts: 3,
+				order: 0,
 				createdAt: new Date(),
 				updatedAt: new Date()
 			},
@@ -26,6 +27,7 @@ module.exports = {
 				type: 'short-answer',
 				points: 15,
 				maxAttempts: 2,
+				order: 1,
 				createdAt: new Date(),
 				updatedAt: new Date()
 			}
@@ -37,6 +39,7 @@ module.exports = {
 				challengeId: mcChallengeId,
 				value: "A",
 				isCorrect: false,
+				order: 0,
 				createdAt: new Date(),
 				updatedAt: new Date()
 			},
@@ -45,6 +48,7 @@ module.exports = {
 				challengeId: mcChallengeId,
 				value: "B",
 				isCorrect: false,
+				order: 1,
 				createdAt: new Date(),
 				updatedAt: new Date()
 			},
@@ -53,6 +57,7 @@ module.exports = {
 				challengeId: mcChallengeId,
 				value: "C",
 				isCorrect: true,
+				order: 2,
 				createdAt: new Date(),
 				updatedAt: new Date()
 			},
@@ -61,6 +66,7 @@ module.exports = {
 				challengeId: mcChallengeId,
 				value: "D",
 				isCorrect: false,
+				order: 3,
 				createdAt: new Date(),
 				updatedAt: new Date()
 			},

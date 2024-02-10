@@ -22,6 +22,10 @@ export class MultipleChoiceOption extends Model {
 	@Column(DataType.BOOLEAN)
 	isCorrect!: boolean;
 
+	@AllowNull(false)
+	@Column(DataType.INTEGER)
+	order!: number;
+
 	@BelongsTo(() => Challenge, { onDelete: 'CASCADE' })
 	challenge!: Challenge;
 }

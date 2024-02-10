@@ -1,27 +1,37 @@
 import { Radio, RadioChangeEvent, Space } from "antd";
 import { MultipleChoiceOption } from "../../types/Challenge";
+import { Attempt } from "@/types/Attempt";
 
 interface Props {
 	options: MultipleChoiceOption[];
-	userAnswer?: MultipleChoiceOption;
-	handleUserAnswerChange: (userAnswer?: MultipleChoiceOption) => void;
+	attempts: Attempt[];
+	userAnswer?: string;
+	handleUserAnswerChange: (userAnswer?: string) => void;
 }
 
-const MultipleChoice = ({ options, userAnswer, handleUserAnswerChange }: Props) => {
+const MultipleChoice = ({ options, attempts, userAnswer, handleUserAnswerChange }: Props) => {
 	const handleChange = (e: RadioChangeEvent) => {
 		const optionId = e.target.value;
 		const option = options.find((option) => option.id === optionId);
-		handleUserAnswerChange(option);
+		handleUserAnswerChange(option!.id.toString());
 	};
 
 	return (
-		<Radio.Group value={userAnswer?.id} onChange={handleChange}>
+		<Radio.Group value={parseInt(userAnswer!)} onChange={handleChange}>
 			<Space direction="vertical">
-				{options.map((option) => (
-					<Radio key={option.id} value={option.id}>
-						{option.value}
-					</Radio>
-				))}
+				{options.map((option) => {
+					const isIncorrect = attempts.find(
+						(attempt) =>
+							parseInt(attempt.multipleChoiceOptionId) === option.id &&
+							!attempt.isCorrect
+					);
+
+					return (
+						<Radio key={option.id} value={option.id} disabled={isIncorrect != null}>
+							{option.value}
+						</Radio>
+					);
+				})}
 			</Space>
 		</Radio.Group>
 	);

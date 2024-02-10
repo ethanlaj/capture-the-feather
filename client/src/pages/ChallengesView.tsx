@@ -46,8 +46,36 @@ function ChallengesView() {
 		setIsModalOpen(true);
 	};
 
-	const handleOk = () => {
-		setIsModalOpen(false);
+	const getCardColor = (challenge: Challenge) => {
+		if (!challenge.isSolvedOrExhausted) {
+			return "";
+		}
+
+		if (challenge.isSolved) {
+			return "bg-green-200";
+		} else {
+			return "bg-red-200";
+		}
+	};
+
+	const handleChallengeUpdated = (challenge: Challenge) => {
+		const updatedCategories = categories.map((category) => {
+			const updatedChallenges = category.challenges.map((c) => {
+				if (c.id === challenge.id) {
+					return challenge;
+				}
+				return c;
+			});
+
+			return { ...category, challenges: updatedChallenges };
+		});
+
+		setCategories(updatedCategories);
+
+		setSelectedChallenge(challenge);
+		if (challenge.isSolvedOrExhausted) {
+			setIsModalOpen(false);
+		}
 	};
 
 	const handleCancel = () => {
@@ -64,6 +92,7 @@ function ChallengesView() {
 						{category.challenges.map((challenge) => (
 							<Card
 								key={challenge.id}
+								className={getCardColor(challenge)}
 								extra={challenge.points}
 								title={challenge.title}
 								bordered={false}
@@ -84,7 +113,7 @@ function ChallengesView() {
 			<ChallengeModal
 				challenge={selectedChallenge}
 				isOpen={isModalOpen}
-				handleOk={handleOk}
+				onChallengeAttempted={handleChallengeUpdated}
 				handleCancel={handleCancel}
 			/>
 		</>

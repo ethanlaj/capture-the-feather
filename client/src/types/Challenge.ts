@@ -25,6 +25,10 @@ interface BaseChallenge {
 	points: number;
 	maxAttempts: number;
 	attempts: Attempt[];
+	attemptsLeft: number;
+	isSolved: boolean;
+	isExhausted: boolean;
+	isSolvedOrExhausted: boolean;
 }
 
 export interface MultipleChoiceOption {

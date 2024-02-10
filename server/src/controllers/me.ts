@@ -60,7 +60,7 @@ router.post("/login", requireBody(['email', 'password']), errorHandler(async (re
 		return res.status(400).send("Invalid email or password");
 	}
 
-	const tokens = await generateTokens(email, user.isAdmin);
+	const tokens = await generateTokens(user.id, user.isAdmin);
 	return res.status(200).json({
 		...tokens,
 		user: {

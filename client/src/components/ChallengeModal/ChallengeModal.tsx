@@ -6,35 +6,53 @@ import {
 	ShortAnswerChallenge,
 } from "../../types/Challenge";
 import MultipleChoice from "./MultipleChoice";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ShortAnswer from "./ShortAnswer";
+import { AttemptService } from "@/services/attemptService";
+import { ClientError } from "@/types/ClientError";
 
 interface Props {
 	challenge?: Challenge;
 	isOpen: boolean;
-	handleOk: () => void;
+	onChallengeAttempted: (challenge: Challenge) => void;
 	handleCancel: () => void;
 }
 
-const ChallengeModal = ({ challenge, isOpen, handleOk, handleCancel }: Props) => {
+const ChallengeModal = ({
+	challenge: initChallenge,
+	isOpen,
+	onChallengeAttempted,
+	handleCancel,
+}: Props) => {
 	const [userAnswer, setUserAnswer] = useState<any>();
+	const [challenge, setChallenge] = useState<Challenge | undefined>(initChallenge);
+
+	useEffect(() => {
+		setChallenge(initChallenge);
+	}, [initChallenge]);
 
 	const onClose = () => {
 		setUserAnswer(undefined);
 		handleCancel();
 	};
 
-	const handleSubmit = () => {};
+	const handleSubmit = async () => {
+		try {
+			const updatedChallenge = await AttemptService.submitAttempt(challenge!.id, userAnswer);
+			setUserAnswer(undefined);
+			onChallengeAttempted(updatedChallenge);
+		} catch (error) {
+			new ClientError(error).toast();
+		}
+	};
 
 	if (!challenge) return null;
-
-	const attemptsLeft = challenge.maxAttempts - challenge.attempts.length;
 
 	return (
 		<Modal
 			title={<div className="text-center font-bold">{challenge.title}</div>}
 			open={isOpen}
-			onOk={handleOk}
+			onOk={handleSubmit}
 			okText="Submit"
 			onCancel={onClose}
 		>
@@ -42,7 +60,7 @@ const ChallengeModal = ({ challenge, isOpen, handleOk, handleCancel }: Props) =>
 				<div className="flex justify-between">
 					<div className="text-align-end">{challenge.points} points</div>
 					<div className="text-align-end">
-						{attemptsLeft}/{challenge.maxAttempts} attempts remaining
+						{challenge.attemptsLeft}/{challenge.maxAttempts} attempts remaining
 					</div>
 				</div>
 
@@ -50,6 +68,7 @@ const ChallengeModal = ({ challenge, isOpen, handleOk, handleCancel }: Props) =>
 				{/* Challenge Types */}
 				{isMultipleChoiceChallenge(challenge) && (
 					<MultipleChoice
+						attempts={challenge.attempts}
 						options={challenge.multipleChoiceOptions}
 						userAnswer={userAnswer}
 						handleUserAnswerChange={setUserAnswer}
