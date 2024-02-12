@@ -7,6 +7,7 @@ import usersRouter from "./controllers/users";
 import meRouter from "./controllers/me";
 import challengesRouter from "./controllers/challenges";
 import attemptsRouter from "./controllers/attempts";
+import leaderboardRouter from "./controllers/leaderboard";
 
 const app: Express = express();
 const port = process.env.PORT || 3001;
@@ -24,6 +25,7 @@ app.use("/users", usersRouter);
 app.use("/me", meRouter);
 app.use("/challenges", challengesRouter);
 app.use("/attempts", attemptsRouter);
+app.use("/leaderboard", leaderboardRouter)
 
 app.listen(port, () => {
 	console.log(`Server is running at http://localhost:${port}`);

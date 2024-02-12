@@ -9,6 +9,7 @@ import Register from "./pages/Register";
 import { useEffect, useState } from "react";
 import useInterceptor from "./hooks/useInterceptor";
 import Loading from "./components/Loading";
+import Leaderboard from "./pages/Leaderboard";
 
 const { Content } = Layout;
 
@@ -34,6 +35,7 @@ const App = () => {
 					<Route path={"/challenges"} element={<ChallengesView />} />
 					<Route path={"/login"} element={<Login />} />
 					<Route path={"/register"} element={<Register />} />
+					<Route path={"/leaderboard"} element={<Leaderboard />} />
 				</Routes>
 			</Content>
 		</Layout>

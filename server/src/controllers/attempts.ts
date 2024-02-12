@@ -4,6 +4,7 @@ import { Attempt, Challenge } from "../database/models";
 import { ChallengeService } from "../services/challengeService";
 import { verifyAccess } from "../middleware/verifyAccess";
 import { AttemptService } from "../services/attemptService";
+import { PointService } from "../services/pointService";
 
 const router = Router();
 
@@ -23,12 +24,27 @@ router.post("/:challengeId", verifyAccess, errorHandler(async (req: Request, res
 		return res.status(400).send("Challenge is already solved or exhausted");
 	}
 
-	await Attempt.create({
-		userId,
-		challengeId,
-		isCorrect: await AttemptService.checkIsCorrect(challenge, userAnswer),
-		...challenge.type === 'multiple-choice' ? { multipleChoiceOptionId: userAnswer } : { userAnswer },
-	});
+	const isCorrect = await AttemptService.checkIsCorrect(challenge, userAnswer);
+
+	const t = await Attempt.sequelize!.transaction();
+	try {
+		await Attempt.create({
+			userId,
+			challengeId,
+			isCorrect,
+			...challenge.type === 'multiple-choice' ? { multipleChoiceOptionId: userAnswer } : { userAnswer },
+		}, { transaction: t });
+
+		if (isCorrect) {
+			await PointService.awardPoints(userId, challengeId, challenge.points, t);
+		}
+
+		await t.commit();
+	} catch (error) {
+		await t.rollback();
+		console.error(error);
+		return res.status(500).send("Failed to save attempt");
+	}
 
 	// Fetch the updated challenge with the user's attempts
 	const updatedChallenge = await Challenge

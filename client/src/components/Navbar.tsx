@@ -13,6 +13,7 @@ const Navbar = () => {
 	const navBarLinks = {
 		"/": "Home",
 		"/challenges": "Challenges",
+		"/leaderboard": "Leaderboard",
 	};
 
 	const isLoggedIn = user != null;

@@ -21,6 +21,11 @@ export class User extends Model {
 	passwordHash!: string;
 
 	@AllowNull(false)
+	@Default(0)
+	@Column(DataType.INTEGER)
+	totalPoints!: number;
+
+	@AllowNull(false)
 	@Default(false)
 	@Column(DataType.BOOLEAN)
 	isAdmin!: boolean;
