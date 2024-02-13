@@ -1,4 +1,5 @@
-import { Table, Column, Model, AllowNull, PrimaryKey, DataType, Default, Unique, AutoIncrement } from 'sequelize-typescript';
+import { Table, Column, Model, AllowNull, PrimaryKey, DataType, Default, Unique, AutoIncrement, HasMany } from 'sequelize-typescript';
+import { PointLog } from './pointLog';
 
 @Table
 export class User extends Model {

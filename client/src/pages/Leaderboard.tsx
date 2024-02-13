@@ -1,37 +1,68 @@
+import { LeaderboardService } from "@/services/leaderboardService";
+import { LeaderboardData } from "@/types/LeaderboardData";
 import { Line } from "@ant-design/plots";
 import { Table } from "antd";
+import { format } from "date-fns";
 import { useEffect, useState } from "react";
 
 const Leaderboard = () => {
-	const [data, setData] = useState([]);
+	const [data, setData] = useState<LeaderboardData>({
+		chartData: [],
+		tableData: [],
+	});
 
 	useEffect(() => {
-		asyncFetch();
+		const getLeaderboardData = async () => {
+			const response = await LeaderboardService.getLeaderboardData();
+
+			const newTableData = response.tableData.map((data, index) => {
+				return {
+					place: index + 1,
+					key: data.id,
+					...data,
+				};
+			});
+
+			setData({
+				chartData: response.chartData,
+				tableData: newTableData,
+			});
+		};
+
+		getLeaderboardData();
 	}, []);
 
-	const asyncFetch = () => {
-		fetch("https://gw.alipayobjects.com/os/bmw-prod/e00d52f4-2fa6-47ee-a0d7-105dd95bde20.json")
-			.then((response) => response.json())
-			.then((json) => setData(json))
-			.catch((error) => {
-				console.log("fetch data failed", error);
-			});
+	const formatDate = (timestamp: string) => {
+		return format(new Date(parseInt(timestamp)), "MM/dd 'at' hh:mm:ss aa");
 	};
 
 	const props = {
-		data,
-		xField: "year",
-		yField: "gdp",
+		data: data.chartData,
+		xField: "timestamp",
+		yField: "cumulativePoints",
 		seriesField: "name",
+		tooltip: {
+			title: formatDate,
+		},
+		xAxis: {
+			label: {
+				formatter: formatDate,
+			},
+		},
 		yAxis: {
 			label: {
-				formatter: (v: any) => `${(v / 10e8).toFixed(1)} B`,
+				formatter: (cumulativePoints: number) => `${cumulativePoints} points`,
+			},
+			title: {
+				text: "Cumulative Points",
+				style: {
+					fontSize: 16,
+				},
 			},
 		},
 		legend: {
 			position: "bottom",
 		},
-		smooth: true,
 		animation: {
 			appear: {
 				animation: "path-in",
@@ -40,36 +71,21 @@ const Leaderboard = () => {
 		},
 	};
 
-	const dataSource = [
-		{
-			key: "1",
-			name: "Mike",
-			age: 32,
-			address: "10 Downing Street",
-		},
-		{
-			key: "2",
-			name: "John",
-			age: 42,
-			address: "10 Downing Street",
-		},
-	];
-
 	const columns = [
 		{
-			title: "Name",
+			title: "Place",
+			dataIndex: "place",
+			key: "place",
+		},
+		{
+			title: "User",
 			dataIndex: "name",
 			key: "name",
 		},
 		{
-			title: "Age",
-			dataIndex: "age",
-			key: "age",
-		},
-		{
-			title: "Address",
-			dataIndex: "address",
-			key: "address",
+			title: "Total Points",
+			dataIndex: "totalPoints",
+			key: "totalPoints",
 		},
 	];
 
@@ -78,7 +94,7 @@ const Leaderboard = () => {
 			<h2 className="text-center">Top Ten Users</h2>
 			<div className="flex flex-col gap-2">
 				<Line {...props} />
-				<Table dataSource={dataSource} columns={columns} pagination={false} />
+				<Table dataSource={data.tableData} columns={columns} pagination={false} />
 			</div>
 		</>
 	);
