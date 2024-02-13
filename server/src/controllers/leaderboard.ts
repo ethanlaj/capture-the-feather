@@ -4,12 +4,16 @@ import { verifyAccess } from "../middleware/verifyAccess";
 import { PointLog, User } from "../database/models";
 
 const router = Router();
+const fifteenMinutes = 15 * 60 * 1000;
 
 router.get("/", verifyAccess, errorHandler(async (_req: Request, res: Response) => {
 	const top10Users = await User.findAll({
 		order: [
 			['totalPoints', 'DESC']
 		],
+		where: {
+			isAdmin: false,
+		},
 		attributes: ['id', 'name', 'totalPoints', 'createdAt'],
 		limit: 10,
 	});
@@ -23,31 +27,38 @@ router.get("/", verifyAccess, errorHandler(async (_req: Request, res: Response) 
 		],
 	});
 
+	// Get starting timestamp:
+	const lowestTimestamp = new Date(pointLogs[0].awardedAt).getTime();
+	const startingTimestamp = Math.ceil(lowestTimestamp / fifteenMinutes) * fifteenMinutes;
+
+	// Get ending timestamp:
+	const highestTimestamp = new Date(pointLogs[pointLogs.length - 1].awardedAt).getTime();
+	const endingTimestamp = Math.ceil(highestTimestamp / fifteenMinutes) * fifteenMinutes;
+
+	const userCumulativePointMap = new Map<number, number>();
+	const userPointLogsMap = new Map<number, PointLog[]>();
 	const mappedData = [];
-	for (let user of top10Users) {
-		let cumulativePoints = 0;
-		const userPointLogs = pointLogs.filter((pointLog) => pointLog.userId === user.id);
+	for (let i = startingTimestamp; i <= endingTimestamp; i += fifteenMinutes) {
+		for (let user of top10Users) {
+			if (!userCumulativePointMap.has(user.id)) {
+				userCumulativePointMap.set(user.id, 0);
+			}
+			if (!userPointLogsMap.has(user.id)) {
+				userPointLogsMap.set(user.id, pointLogs.filter((pointLog) => pointLog.userId === user.id));
+			}
 
-		// Start users at 0 points
-		mappedData.push({
-			name: user.name,
-			timestamp: user.createdAt.getTime(),
-			cumulativePoints: 0,
-		});
-
-		for (let pointLog of userPointLogs) {
-			cumulativePoints += pointLog.pointsAwarded;
-			const timestamp = new Date(pointLog.awardedAt).getTime();
+			const userPointLogs = userPointLogsMap.get(user.id) as PointLog[];
+			const userPointLogsBeforeTimestamp = userPointLogs.filter((pointLog) => new Date(pointLog.awardedAt).getTime() <= i);
+			const userCumulativePoints = userPointLogsBeforeTimestamp.reduce((acc, pointLog) => acc + pointLog.pointsAwarded, 0);
+			userCumulativePointMap.set(user.id, userCumulativePoints);
 
 			mappedData.push({
 				name: user.name,
-				timestamp: timestamp,
-				cumulativePoints: cumulativePoints,
+				timestamp: i,
+				cumulativePoints: userCumulativePoints,
 			});
 		}
-	};
-
-	mappedData.sort((a, b) => a.timestamp - b.timestamp);
+	}
 
 	res.json({
 		chartData: mappedData,

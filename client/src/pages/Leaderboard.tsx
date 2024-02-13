@@ -1,19 +1,43 @@
 import { LeaderboardService } from "@/services/leaderboardService";
-import { LeaderboardData } from "@/types/LeaderboardData";
 import { Line } from "@ant-design/plots";
 import { Table } from "antd";
 import { format } from "date-fns";
 import { useEffect, useState } from "react";
 
+interface UpdatedLeaderboardData {
+	chartData: {
+		key: number;
+		name: string;
+		timestamp: string;
+		cumulativePoints: number;
+	}[];
+	tableData: {
+		id: number;
+		name: string;
+		totalPoints: number;
+	}[];
+}
+
 const Leaderboard = () => {
-	const [data, setData] = useState<LeaderboardData>({
+	const [data, setData] = useState<UpdatedLeaderboardData>({
 		chartData: [],
 		tableData: [],
 	});
 
+	const formatDate = (timestamp: number) => {
+		return format(new Date(timestamp), "M/d 'at' h:mm aa");
+	};
+
 	useEffect(() => {
 		const getLeaderboardData = async () => {
 			const response = await LeaderboardService.getLeaderboardData();
+
+			const newChartData = response.chartData.map((data) => {
+				return {
+					...data,
+					timestamp: formatDate(data.timestamp),
+				};
+			});
 
 			const newTableData = response.tableData.map((data, index) => {
 				return {
@@ -24,7 +48,7 @@ const Leaderboard = () => {
 			});
 
 			setData({
-				chartData: response.chartData,
+				chartData: newChartData,
 				tableData: newTableData,
 			});
 		};
@@ -32,22 +56,14 @@ const Leaderboard = () => {
 		getLeaderboardData();
 	}, []);
 
-	const formatDate = (timestamp: string) => {
-		return format(new Date(parseInt(timestamp)), "MM/dd 'at' hh:mm:ss aa");
-	};
-
 	const props = {
 		data: data.chartData,
 		xField: "timestamp",
 		yField: "cumulativePoints",
 		seriesField: "name",
-		tooltip: {
-			title: formatDate,
-		},
-		xAxis: {
-			label: {
-				formatter: formatDate,
-			},
+		slider: {
+			start: 0,
+			end: 1,
 		},
 		yAxis: {
 			label: {
