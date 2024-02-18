@@ -12,6 +12,7 @@ _For each milestone, I will add some unit tests to backend code only as it will 
 For Milestone 1, the plan is to finish the basic functionality of the platform for non-admins. This includes viewing challenges, solving challenging, and being a part of a leaderboard.
 
 -   [2/12/24] - Users can view challenges, solve them, and get points for it. A mock leaderboard was created to show the top 10 users. Real data will be implemented soon.
+-   [2/18/24] - Real data has been implemented into the leaderboard. Challenges can now be imported from open source. Examples of these can be found in importer/challenges. The challenges in importer/challengesToDo require files to be downloadable and will be implemented during Milestone 2.
 
 **Milestone 2 - Due Mar 25 by 12:59am**
 For Milestone 2, the plan is to finish the basic functionality of the platform for admins. This will include creating challenges, editing challenges, deleting challenges, and managing users.
