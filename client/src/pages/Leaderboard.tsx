@@ -1,5 +1,5 @@
 import { LeaderboardService } from "@/services/leaderboardService";
-import { Line } from "@ant-design/plots";
+import { Line, LineConfig } from "@ant-design/plots";
 import { Table } from "antd";
 import { format } from "date-fns";
 import { useEffect, useState } from "react";
@@ -56,7 +56,7 @@ const Leaderboard = () => {
 		getLeaderboardData();
 	}, []);
 
-	const props = {
+	const props: LineConfig = {
 		data: data.chartData,
 		xField: "timestamp",
 		yField: "cumulativePoints",
@@ -67,7 +67,7 @@ const Leaderboard = () => {
 		},
 		yAxis: {
 			label: {
-				formatter: (cumulativePoints: number) => `${cumulativePoints} points`,
+				formatter: (cumulativePoints: string) => `${cumulativePoints} points`,
 			},
 			title: {
 				text: "Cumulative Points",

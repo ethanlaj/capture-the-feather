@@ -21,9 +21,14 @@
     "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.6.5",
     "sequelize-typescript": "^2.1.6",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "cors": "^2.8.5",
+    "lodash": "^4.17.21",
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
-    "ts-node": "^10.9.2"
+    "@types/cors": "^2.8.17",
+    "@types/lodash": "^4.14.202",
+    "@types/uuid": "^9.0.7"
   }
 }
