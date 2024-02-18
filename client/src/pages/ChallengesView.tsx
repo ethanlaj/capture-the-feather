@@ -87,6 +87,8 @@ function ChallengesView() {
 				setIsConfettiActive(false);
 			}, 3000);
 		}
+
+		return challenge.isSolved;
 	};
 
 	const handleCancel = () => {
@@ -110,7 +112,7 @@ function ChallengesView() {
 								style={{ width: 300, margin: "15px" }}
 								onClick={() => showModal(challenge)}
 							>
-								{challenge.description}
+								{challenge.shortDescription}
 							</Card>
 						))}
 					</div>

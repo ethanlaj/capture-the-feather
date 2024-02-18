@@ -1,4 +1,4 @@
-import { Modal } from "antd";
+import { Alert, Divider, Modal } from "antd";
 import {
 	Challenge,
 	ChallengeType,
@@ -14,7 +14,7 @@ import { ClientError } from "@/types/ClientError";
 interface Props {
 	challenge?: Challenge;
 	isOpen: boolean;
-	onChallengeAttempted: (challenge: Challenge) => void;
+	onChallengeAttempted: (challenge: Challenge) => boolean;
 	handleCancel: () => void;
 }
 
@@ -26,6 +26,7 @@ const ChallengeModal = ({
 }: Props) => {
 	const [userAnswer, setUserAnswer] = useState<any>();
 	const [challenge, setChallenge] = useState<Challenge | undefined>(initChallenge);
+	const [showIncorrectAnswerAlert, setShowIncorrectAnswerAlert] = useState(false);
 
 	useEffect(() => {
 		setChallenge(initChallenge);
@@ -33,6 +34,7 @@ const ChallengeModal = ({
 
 	const onClose = () => {
 		setUserAnswer(undefined);
+		setShowIncorrectAnswerAlert(false);
 		handleCancel();
 	};
 
@@ -40,13 +42,22 @@ const ChallengeModal = ({
 		try {
 			const updatedChallenge = await AttemptService.submitAttempt(challenge!.id, userAnswer);
 			setUserAnswer(undefined);
-			onChallengeAttempted(updatedChallenge);
+			const isSolved = onChallengeAttempted(updatedChallenge);
+			setShowIncorrectAnswerAlert(!isSolved);
 		} catch (error) {
 			new ClientError(error).toast();
 		}
 	};
 
+	function convertTextToHtml(description: string): string {
+		return description.replace(/\n/g, "<br>");
+	}
+
 	if (!challenge) return null;
+
+	const attemptsRemainingText =
+		(challenge.maxAttempts === 0 ? "∞" : `${challenge.attemptsLeft}/${challenge.maxAttempts}`) +
+		" attempts remaining";
 
 	return (
 		<Modal
@@ -55,16 +66,23 @@ const ChallengeModal = ({
 			onOk={handleSubmit}
 			okText="Submit"
 			onCancel={onClose}
+			width="90%"
 		>
 			<div className="flex flex-col gap-4">
 				<div className="flex justify-between">
 					<div className="text-align-end">{challenge.points} points</div>
-					<div className="text-align-end">
-						{challenge.attemptsLeft}/{challenge.maxAttempts} attempts remaining
-					</div>
+					<div className="text-align-end">{attemptsRemainingText}</div>
 				</div>
 
-				<p className="m-0">{challenge.description}</p>
+				<div
+					dangerouslySetInnerHTML={{ __html: convertTextToHtml(challenge.description) }}
+				/>
+
+				<Divider className="m-1" />
+				{showIncorrectAnswerAlert && (
+					<Alert type="error" message={`Incorrect answer. ${attemptsRemainingText}`} />
+				)}
+
 				{/* Challenge Types */}
 				{isMultipleChoiceChallenge(challenge) && (
 					<MultipleChoice

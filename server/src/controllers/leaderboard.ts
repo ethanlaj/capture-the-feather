@@ -27,6 +27,13 @@ router.get("/", verifyAccess, errorHandler(async (_req: Request, res: Response) 
 		],
 	});
 
+	if (pointLogs.length === 0) {
+		return res.json({
+			chartData: [],
+			tableData: [],
+		});
+	}
+
 	// Get starting timestamp:
 	const lowestTimestamp = new Date(pointLogs[0].awardedAt).getTime();
 	const startingTimestamp = Math.ceil(lowestTimestamp / fifteenMinutes) * fifteenMinutes;

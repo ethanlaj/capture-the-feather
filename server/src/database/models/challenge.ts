@@ -1,4 +1,4 @@
-import { Table, Column, Model, AllowNull, PrimaryKey, DataType, HasMany, AutoIncrement, Scopes } from 'sequelize-typescript';
+import { Table, Column, Model, AllowNull, PrimaryKey, DataType, HasMany, AutoIncrement, Scopes, Default } from 'sequelize-typescript';
 import { MultipleChoiceOption } from './multipleChoiceOption';
 import { ShortAnswerOption } from './shortAnswerOption';
 import { Attempt } from './attempt';
@@ -45,17 +45,33 @@ export class Challenge extends Model {
 
 	@AllowNull(false)
 	@Column(DataType.ENUM('multiple-choice', 'short-answer'))
-	type!: string;
+	type!: 'multiple-choice' | 'short-answer'
 
+	@AllowNull(false)
+	@Column(DataType.ENUM('standard', 'dynamic'))
+	pointsType!: 'standard' | 'dynamic';
+
+	// AKA initialPoints
 	@AllowNull(false)
 	@Column(DataType.INTEGER)
 	points!: number;
+
+	// For dynamic points
+	@AllowNull(true)
+	@Column(DataType.INTEGER)
+	minPoints!: number;
+
+	// For dynamic points
+	@AllowNull(true)
+	@Column(DataType.INTEGER)
+	decay!: number;
 
 	@AllowNull(false)
 	@Column(DataType.INTEGER)
 	maxAttempts!: number;
 
 	@AllowNull(false)
+	@Default(0)
 	@Column(DataType.INTEGER)
 	order!: number;
 
@@ -66,6 +82,10 @@ export class Challenge extends Model {
 
 	@Column(DataType.VIRTUAL)
 	get isExhausted(): boolean {
+		if (this.maxAttempts === 0) {
+			return false;
+		}
+
 		return this.attempts.length >= this.maxAttempts;
 	}
 

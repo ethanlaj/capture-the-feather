@@ -5,19 +5,15 @@
   "main": "index.js",
   "scripts": {
     "install-all": "concurrently -n root,client,server \"npm install\" \"npm install --prefix client\" \"npm install --prefix server\"",
-    "dev": "concurrently -n client,server -c magenta,blue \"npm run dev --prefix client\" \"npm run dev --prefix server\"",
-    "import": "ts-node import.ts"
+    "dev": "concurrently -n client,server -c magenta,blue \"npm run dev --prefix client\" \"npm run dev --prefix server\""
   },
   "author": "Ethan Lajeunesse",
   "license": "ISC",
   "dependencies": {
-    "concurrently": "^8.2.2",
-    "prompt-sync": "^4.2.0",
-    "typescript": "^5.3.3"
+    "concurrently": "^8.2.2"
   },
   "devDependencies": {
     "@types/node": "^20.11.19",
-    "@types/prompt-sync": "^4.2.3",
     "sequelize-cli": "^6.6.2",
     "ts-node": "^10.9.2"
   }
