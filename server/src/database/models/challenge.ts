@@ -1,7 +1,5 @@
 import { Table, Column, Model, AllowNull, PrimaryKey, DataType, HasMany, AutoIncrement, Scopes, Default } from 'sequelize-typescript';
-import { MultipleChoiceOption } from './multipleChoiceOption';
-import { ShortAnswerOption } from './shortAnswerOption';
-import { Attempt } from './attempt';
+import { MultipleChoiceOption, ShortAnswerOption, Attempt } from '.';
 
 @Scopes(() => ({
 	withUserAttempts: (userId) => ({
@@ -21,7 +19,7 @@ import { Attempt } from './attempt';
 	})
 }))
 @Table
-export class Challenge extends Model {
+class Challenge extends Model {
 	@PrimaryKey
 	@AutoIncrement
 	@Column(DataType.INTEGER)
@@ -108,3 +106,5 @@ export class Challenge extends Model {
 	@HasMany(() => Attempt)
 	attempts!: Attempt[];
 }
+
+export { Challenge as _Challenge };

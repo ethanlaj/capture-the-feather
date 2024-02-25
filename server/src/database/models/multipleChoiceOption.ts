@@ -1,8 +1,8 @@
 import { Table, Column, Model, AllowNull, PrimaryKey, DataType, BelongsTo, ForeignKey, AutoIncrement } from 'sequelize-typescript';
-import { Challenge } from './challenge';
+import { Challenge } from '.';
 
 @Table
-export class MultipleChoiceOption extends Model {
+class MultipleChoiceOption extends Model {
 	@PrimaryKey
 	@AutoIncrement
 	@AllowNull(false)
@@ -29,3 +29,5 @@ export class MultipleChoiceOption extends Model {
 	@BelongsTo(() => Challenge, { onDelete: 'CASCADE' })
 	challenge!: Challenge;
 }
+
+export { MultipleChoiceOption as _MultipleChoiceOption };

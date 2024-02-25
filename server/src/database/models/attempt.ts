@@ -1,10 +1,8 @@
 import { Table, Column, Model, AllowNull, PrimaryKey, DataType, ForeignKey, Default, BelongsTo, AutoIncrement } from 'sequelize-typescript';
-import { Challenge } from './challenge';
-import { MultipleChoiceOption } from './multipleChoiceOption';
-import { User } from './user';
+import { Challenge, MultipleChoiceOption, User } from '.';
 
 @Table
-export class Attempt extends Model {
+class Attempt extends Model {
 	@PrimaryKey
 	@AutoIncrement
 	@Column(DataType.INTEGER)
@@ -35,3 +33,5 @@ export class Attempt extends Model {
 	@BelongsTo(() => Challenge, { onDelete: 'CASCADE' })
 	challenge!: Challenge;
 }
+
+export { Attempt as _Attempt };

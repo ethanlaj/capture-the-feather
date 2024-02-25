@@ -1,8 +1,7 @@
 import { Table, Column, Model, AllowNull, PrimaryKey, DataType, Default, Unique, AutoIncrement, HasMany } from 'sequelize-typescript';
-import { PointLog } from './pointLog';
 
 @Table
-export class User extends Model {
+class User extends Model {
 	@PrimaryKey
 	@AutoIncrement
 	@Column(DataType.INTEGER)
@@ -31,3 +30,5 @@ export class User extends Model {
 	@Column(DataType.BOOLEAN)
 	isAdmin!: boolean;
 }
+
+export { User as _User };

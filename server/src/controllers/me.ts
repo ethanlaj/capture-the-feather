@@ -1,9 +1,8 @@
 import { Router } from "express";
 import bcrypt from "bcrypt";
 import jsonwebtoken, { JwtPayload } from "jsonwebtoken";
-import { User } from "../database/models";
+import { User, RefreshToken } from "../database/models";
 import { requireBody } from "../middleware/requireBody";
-import { RefreshToken } from "../database/models/refreshToken";
 import errorHandler from "../middleware/errorHandler";
 import { verifyAccess } from "../middleware/verifyAccess";
 
@@ -55,12 +54,7 @@ router.post("/login", requireBody(['email', 'password']), errorHandler(async (re
 		return res.status(400).send("Invalid email or password");
 	}
 
-	const valid = await new Promise((resolve, reject) => {
-		bcrypt.compare(password, user.passwordHash, (err, result) => {
-			if (err) reject(err);
-			resolve(result);
-		});
-	});
+	const valid = await bcrypt.compare(password, user.passwordHash);
 	if (!valid) {
 		return res.status(400).send("Invalid email or password");
 	}
