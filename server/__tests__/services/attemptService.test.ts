@@ -1,6 +1,35 @@
 import { Challenge, MultipleChoiceOption, ShortAnswerOption } from '../../src/database/models';
 import { AttemptService } from '../../src/services/attemptService';
 
+const multipleChoiceChallenge = {
+	type: 'multiple-choice',
+	multipleChoiceOptions: [
+		{ id: 1, isCorrect: false },
+		{ id: 2, isCorrect: true },
+	],
+} as Challenge;
+
+const shortAnswerChallengeRegex = {
+	type: 'short-answer',
+	shortAnswerOptions: [
+		{ matchMode: 'regex', regExp: '^test$' }
+	],
+} as Challenge;
+
+const shortAnswerChallengeStatic = {
+	type: 'short-answer',
+	shortAnswerOptions: [
+		{ matchMode: 'static', value: 'Test', isCaseSensitive: false }
+	],
+} as Challenge;
+
+const shortAnswerChallengeStaticCaseSensitive = {
+	type: 'short-answer',
+	shortAnswerOptions: [
+		{ matchMode: 'static', value: 'Test', isCaseSensitive: true }
+	],
+} as Challenge;
+
 describe('AttemptService', () => {
 	describe('checkIsCorrect method', () => {
 		it('should correctly identify a correct multiple-choice answer', async () => {
@@ -33,35 +62,6 @@ describe('AttemptService', () => {
 			expect(isCorrect).toBe(false);
 		});
 	});
-
-	const multipleChoiceChallenge = {
-		type: 'multiple-choice',
-		multipleChoiceOptions: [
-			{ id: 1, isCorrect: false },
-			{ id: 2, isCorrect: true },
-		],
-	} as Challenge;
-
-	const shortAnswerChallengeRegex = {
-		type: 'short-answer',
-		shortAnswerOptions: [
-			{ matchMode: 'regex', regExp: '^test$' }
-		],
-	} as Challenge;
-
-	const shortAnswerChallengeStatic = {
-		type: 'short-answer',
-		shortAnswerOptions: [
-			{ matchMode: 'static', value: 'Test', isCaseSensitive: false }
-		],
-	} as Challenge;
-
-	const shortAnswerChallengeStaticCaseSensitive = {
-		type: 'short-answer',
-		shortAnswerOptions: [
-			{ matchMode: 'static', value: 'Test', isCaseSensitive: true }
-		],
-	} as Challenge;
 
 	describe('isShortAnswerCorrect method', () => {
 		it('should return true for a correct short-answer match (regex)', async () => {
