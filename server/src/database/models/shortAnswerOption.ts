@@ -14,12 +14,12 @@ class ShortAnswerOption extends Model {
 	challengeId!: number;
 
 	@AllowNull(false)
-	@Column(DataType.STRING)
-	value!: string;
-
-	@AllowNull(false)
 	@Column(DataType.ENUM('static', 'regex'))
 	matchMode!: 'static' | 'regex';
+
+	@AllowNull(true)
+	@Column(DataType.STRING)
+	value!: string;
 
 	@AllowNull(true)
 	@Column(DataType.STRING)
