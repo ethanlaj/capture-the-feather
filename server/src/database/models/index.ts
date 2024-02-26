@@ -5,3 +5,5 @@ export { _MultipleChoiceOption as MultipleChoiceOption } from "./multipleChoiceO
 export { _ShortAnswerOption as ShortAnswerOption } from "./shortAnswerOption";
 export { _Attempt as Attempt } from "./attempt";
 export { _PointLog as PointLog } from "./pointLog";
+export { _Badge as Badge } from "./badge";
+export { _UserBadge as UserBadge } from "./userBadge";

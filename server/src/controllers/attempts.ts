@@ -1,10 +1,11 @@
 import { Request, Response, Router } from "express";
 import errorHandler from "../middleware/errorHandler";
-import { Attempt, Challenge } from "../database/models";
+import { Attempt, Badge, Challenge } from "../database/models";
 import { ChallengeService } from "../services/challengeService";
 import { verifyAccess } from "../middleware/verifyAccess";
 import { AttemptService } from "../services/attemptService";
 import { PointService } from "../services/pointService";
+import { BadgeService } from "../services/badgeService";
 
 const router = Router();
 
@@ -27,6 +28,7 @@ router.post("/:challengeId", verifyAccess, errorHandler(async (req: Request, res
 	const isCorrect = await AttemptService.checkIsCorrect(challenge, userAnswer);
 
 	const t = await Attempt.sequelize!.transaction();
+	let badges: Badge[] = [];
 	try {
 		await Attempt.create({
 			userId,
@@ -37,6 +39,7 @@ router.post("/:challengeId", verifyAccess, errorHandler(async (req: Request, res
 
 		if (isCorrect) {
 			await PointService.awardPoints(userId, challengeId, challenge.points, t);
+			badges = await BadgeService.awardBadges(userId, challengeId, t);
 		}
 
 		await t.commit();
@@ -55,7 +58,7 @@ router.post("/:challengeId", verifyAccess, errorHandler(async (req: Request, res
 		ChallengeService.removeAnswers(updatedChallenge);
 	}
 
-	return res.json(updatedChallenge);
+	return res.json({ challenge: updatedChallenge, badges });
 }));
 
 export default router;

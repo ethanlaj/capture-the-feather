@@ -32,6 +32,9 @@ class Attempt extends Model {
 
 	@BelongsTo(() => Challenge, { onDelete: 'CASCADE' })
 	challenge!: Challenge;
+
+	@BelongsTo(() => User, { onDelete: 'CASCADE' })
+	user!: User;
 }
 
 export { Attempt as _Attempt };

@@ -1,4 +1,5 @@
 import { Table, Column, Model, AllowNull, PrimaryKey, DataType, Default, Unique, AutoIncrement, HasMany } from 'sequelize-typescript';
+import { Attempt } from '.';
 
 @Table
 class User extends Model {
@@ -29,6 +30,9 @@ class User extends Model {
 	@Default(false)
 	@Column(DataType.BOOLEAN)
 	isAdmin!: boolean;
+
+	@HasMany(() => Attempt)
+	attempts!: Attempt[];
 }
 
 export { User as _User };

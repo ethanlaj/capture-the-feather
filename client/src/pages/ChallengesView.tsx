@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
 import { useWindowSize } from "@react-hook/window-size";
-import { Card, Divider } from "antd";
+import { Button, Card, Divider, notification } from "antd";
 import ChallengeModal from "../components/ChallengeModal/ChallengeModal";
 import { Challenge } from "../types/Challenge";
 import { ChallengeService } from "@/services/challengeService";
 import _ from "lodash";
 import { ClientError } from "@/types/ClientError";
 import Confetti from "react-confetti";
+import { SubmitAttemptResponse } from "@/services/attemptService";
+import { useNavigate } from "react-router-dom";
 
 interface Category {
 	name: string;
@@ -19,6 +21,7 @@ function ChallengesView() {
 	const [categories, setCategories] = useState<Category[]>([]);
 	const [isConfettiActive, setIsConfettiActive] = useState(false);
 	const [width, height] = useWindowSize();
+	const navigate = useNavigate();
 
 	useEffect(() => {
 		async function getChallenges() {
@@ -62,7 +65,9 @@ function ChallengesView() {
 		}
 	};
 
-	const handleChallengeUpdated = (challenge: Challenge) => {
+	const handleChallengeUpdated = (submitResponse: SubmitAttemptResponse) => {
+		const challenge = submitResponse.challenge;
+
 		const updatedCategories = categories.map((category) => {
 			const updatedChallenges = category.challenges.map((c) => {
 				if (c.id === challenge.id) {
@@ -86,6 +91,20 @@ function ChallengesView() {
 			setTimeout(() => {
 				setIsConfettiActive(false);
 			}, 3000);
+
+			for (const badge of submitResponse.badges!) {
+				notification.open({
+					message: "New Badge Awarded",
+					type: "success",
+					btn: (
+						<Button type="primary" onClick={() => navigate("/badges")}>
+							View
+						</Button>
+					),
+					description: `You have earned the ${badge.name} badge!`,
+					icon: <img src={badge.imageUrl} alt={badge.name} width={24} height={24} />,
+				});
+			}
 		}
 
 		return challenge.isSolved;

@@ -1,5 +1,5 @@
 import { Table, Column, Model, AllowNull, PrimaryKey, DataType, HasMany, AutoIncrement, Scopes, Default } from 'sequelize-typescript';
-import { MultipleChoiceOption, ShortAnswerOption, Attempt } from '.';
+import { MultipleChoiceOption, ShortAnswerOption, Attempt, PointLog } from '.';
 
 @Scopes(() => ({
 	withUserAttempts: (userId) => ({

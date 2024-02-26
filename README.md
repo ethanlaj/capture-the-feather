@@ -13,6 +13,7 @@ For Milestone 1, the plan is to finish the basic functionality of the platform f
 
 -   [2/12/24] - Users can view challenges, solve them, and get points for it. A mock leaderboard was created to show the top 10 users. Real data will be implemented soon.
 -   [2/18/24] - Real data has been implemented into the leaderboard. Challenges can now be imported from open source. Examples of these can be found in importer/challenges. The challenges in importer/challengesToDo require files to be downloadable and will be implemented during Milestone 2.
+-   [2/25/24] - Tests have been written for every controller and service class. These tests are located in the server/\_\_tests\_\_ directory. I have added badges into the platform, so that whenever a user solves a challenge correctly, they will be awarded badges that they meet the requirements for.
 
 **Milestone 2 - Due Mar 25 by 12:59am**
 For Milestone 2, the plan is to finish the basic functionality of the platform for admins. This will include creating challenges, editing challenges, deleting challenges, and managing users.

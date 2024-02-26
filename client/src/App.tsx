@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import useInterceptor from "./hooks/useInterceptor";
 import Loading from "./components/Loading";
 import Leaderboard from "./pages/Leaderboard";
+import Badges from "./pages/Badges";
 
 const { Content } = Layout;
 
@@ -36,6 +37,7 @@ const App = () => {
 					<Route path={"/login"} element={<Login />} />
 					<Route path={"/register"} element={<Register />} />
 					<Route path={"/leaderboard"} element={<Leaderboard />} />
+					<Route path={"/badges"} element={<Badges />} />
 				</Routes>
 			</Content>
 		</Layout>

@@ -27,7 +27,7 @@ describe('PointService', () => {
 				.toThrow('User or challenge not found');
 		});
 
-		it('should throw Error if user not found', async () => {
+		it('should throw Error if challenge not found', async () => {
 			jest.mocked(Challenge.findByPk).mockResolvedValue(null);
 			jest.mocked(User.findByPk).mockResolvedValue({} as User);
 

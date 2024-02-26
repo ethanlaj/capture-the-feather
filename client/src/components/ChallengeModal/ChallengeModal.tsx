@@ -8,13 +8,13 @@ import {
 import MultipleChoice from "./MultipleChoice";
 import { useEffect, useState } from "react";
 import ShortAnswer from "./ShortAnswer";
-import { AttemptService } from "@/services/attemptService";
+import { AttemptService, SubmitAttemptResponse } from "@/services/attemptService";
 import { ClientError } from "@/types/ClientError";
 
 interface Props {
 	challenge?: Challenge;
 	isOpen: boolean;
-	onChallengeAttempted: (challenge: Challenge) => boolean;
+	onChallengeAttempted: (submitResponse: SubmitAttemptResponse) => boolean;
 	handleCancel: () => void;
 }
 
@@ -40,9 +40,9 @@ const ChallengeModal = ({
 
 	const handleSubmit = async () => {
 		try {
-			const updatedChallenge = await AttemptService.submitAttempt(challenge!.id, userAnswer);
+			const submitResponse = await AttemptService.submitAttempt(challenge!.id, userAnswer);
 			setUserAnswer(undefined);
-			const isSolved = onChallengeAttempted(updatedChallenge);
+			const isSolved = onChallengeAttempted(submitResponse);
 			setShowIncorrectAnswerAlert(!isSolved);
 		} catch (error) {
 			new ClientError(error).toast();

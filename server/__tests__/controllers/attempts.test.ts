@@ -4,6 +4,7 @@ import { verifyAccess } from '../../src/middleware/verifyAccess';
 import { AttemptService } from '../../src/services/attemptService';
 import { Attempt, Challenge } from '../../src/database/models';
 import { PointService } from '../../src/services/pointService';
+import { BadgeService } from '../../src/services/badgeService';
 
 const mockCommit = jest.fn();
 
@@ -26,6 +27,13 @@ jest.mock('../../src/services/attemptService', () => ({
 jest.mock('../../src/services/pointService', () => ({
 	PointService: {
 		awardPoints: jest.fn(),
+	},
+}));
+
+// Mock pointService
+jest.mock('../../src/services/badgeService', () => ({
+	BadgeService: {
+		awardBadges: jest.fn(),
 	},
 }));
 
@@ -112,6 +120,20 @@ describe('POST /attempts/:challengeId', () => {
 		await request(app).post('/attempts/1');
 
 		expect(PointService.awardPoints).toHaveBeenCalled();
+	});
+
+	it('awards badges if the attempt is correct', async () => {
+		jest.mocked(Challenge.findByPk).mockResolvedValue({
+			id: 1,
+			isSolvedOrExhausted: false,
+			points: 100,
+		} as Challenge);
+
+		jest.mocked(AttemptService.checkIsCorrect).mockResolvedValue(true);
+
+		await request(app).post('/attempts/1');
+
+		expect(BadgeService.awardBadges).toHaveBeenCalled();
 	});
 
 	it('does not award points if the attempt is incorrect', async () => {
