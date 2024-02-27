@@ -1,6 +1,7 @@
 import request from 'supertest';
 import app from '../../src/app';
 import { verifyAccess } from '../../src/middleware/verifyAccess';
+import { Badge } from '../../src/database/models';
 
 // Mock the verifyAccess middleware
 jest.mock('../../src/middleware/verifyAccess', () => ({
@@ -31,6 +32,15 @@ describe('GET /badges', () => {
 	});
 
 	it('gets the badges', async () => {
+		const badges: Badge[] = [
+			{
+				userBadges: [],
+				setDataValue: jest.fn(),
+			} as unknown as Badge,
+		];
+
+		jest.mocked(Badge.findAll).mockResolvedValue(badges);
+
 		const response = await request(app).get('/badges');
 
 		expect(response.statusCode).toBe(200);
