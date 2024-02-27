@@ -19,4 +19,4 @@ jobs:
                   cache: "npm"
             - run: cd server
             - run: npm install
-            - run: npm test
+            - run: npm run test
