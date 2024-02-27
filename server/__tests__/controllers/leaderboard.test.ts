@@ -22,10 +22,10 @@ jest.mock('../../src/services/challengeService', () => ({
 jest.mock('../../src/database/models', () => {
 	return {
 		User: {
-			findAll: jest.fn(),
+			findAll: jest.fn().mockResolvedValue([]),
 		},
 		PointLog: {
-			findAll: jest.fn(),
+			findAll: jest.fn().mockResolvedValue([]),
 		}
 	}
 });
@@ -36,9 +36,10 @@ beforeEach(async () => {
 
 describe('GET /leaderboard', () => {
 	it('should require access token', async () => {
-		await request(app).get('/leaderboard');
+		const response = await request(app).get('/leaderboard');
 
 		expect(verifyAccess).toHaveBeenCalled();
+		expect(response.statusCode).toBe(200);
 	});
 
 	it('gets the leaderboard', async () => {

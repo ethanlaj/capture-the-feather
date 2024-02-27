@@ -22,7 +22,7 @@ jest.mock('../../src/services/challengeService', () => ({
 jest.mock('../../src/database/models', () => {
 	return {
 		Challenge: {
-			findAll: jest.fn(),
+			findAll: jest.fn().mockResolvedValue([]),
 			scope: jest.fn().mockReturnThis(),
 		},
 	}
@@ -34,9 +34,10 @@ beforeEach(async () => {
 
 describe('GET /challenges', () => {
 	it('should require access token', async () => {
-		await request(app).get('/challenges');
+		const response = await request(app).get('/challenges');
 
 		expect(verifyAccess).toHaveBeenCalled();
+		expect(response.statusCode).toBe(200);
 	});
 
 	it('gets all challenges', async () => {

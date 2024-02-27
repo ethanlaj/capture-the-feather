@@ -15,7 +15,12 @@ jest.mock('../../src/middleware/verifyAccess', () => ({
 jest.mock('../../src/database/models', () => {
 	return {
 		Badge: {
-			findAll: jest.fn(),
+			findAll: jest.fn().mockResolvedValue([
+				{
+					userBadges: [],
+					setDataValue: jest.fn(),
+				},
+			]),
 		},
 	}
 });
@@ -26,21 +31,13 @@ beforeEach(async () => {
 
 describe('GET /badges', () => {
 	it('should require access token', async () => {
-		await request(app).get('/badges');
+		const response = await request(app).get('/badges');
 
 		expect(verifyAccess).toHaveBeenCalled();
+		expect(response.statusCode).toBe(200);
 	});
 
 	it('gets the badges', async () => {
-		const badges: Badge[] = [
-			{
-				userBadges: [],
-				setDataValue: jest.fn(),
-			} as unknown as Badge,
-		];
-
-		jest.mocked(Badge.findAll).mockResolvedValue(badges);
-
 		const response = await request(app).get('/badges');
 
 		expect(response.statusCode).toBe(200);

@@ -48,7 +48,7 @@ jest.mock('../../src/services/challengeService', () => ({
 jest.mock('../../src/database/models', () => {
 	return {
 		Challenge: {
-			findByPk: jest.fn(),
+			findByPk: jest.fn().mockReturnValue({}),
 			scope: jest.fn().mockReturnThis(),
 		},
 		Attempt: {
@@ -69,9 +69,10 @@ beforeEach(async () => {
 
 describe('POST /attempts/:challengeId', () => {
 	it('should require access token', async () => {
-		await request(app).post('/attempts/1');
+		const response = await request(app).post('/attempts/1');
 
 		expect(verifyAccess).toHaveBeenCalled();
+		expect(response.statusCode).toBe(200);
 	});
 
 	it('creates an attempt', async () => {
