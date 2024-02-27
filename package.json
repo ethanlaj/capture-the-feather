@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "install-all": "concurrently -n root,client,server \"npm install\" \"npm install --prefix client\" \"npm install --prefix server\"",
-    "dev": "concurrently -n client,server -c magenta,blue \"npm run dev --prefix client\" \"npm run dev --prefix server\""
+    "dev": "concurrently -n client,server -c magenta,blue \"npm run dev --prefix client\" \"npm run dev --prefix server\"",
+    "test": "npm run test --prefix server"
   },
   "author": "Ethan Lajeunesse",
   "license": "ISC",
