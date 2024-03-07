@@ -15,6 +15,7 @@ const Navbar = () => {
 		"/challenges": "Challenges",
 		"/leaderboard": "Leaderboard",
 		"/badges": "Badges",
+		"/admin": "Admin",
 	};
 
 	const isLoggedIn = user != null;
