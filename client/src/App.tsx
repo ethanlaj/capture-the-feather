@@ -13,6 +13,7 @@ import Leaderboard from "./pages/Leaderboard";
 import Badges from "./pages/Badges";
 import AdminLayout from "./pages/admin/Admin";
 import UserRouteLayout from "./components/UserRouteLayout";
+import Challenges from "./pages/admin/Challenges";
 
 const { Content } = Layout;
 
@@ -45,7 +46,8 @@ const App = () => {
 					<Route path="/admin" element={<AdminLayout />}>
 						<Route index element={<Navigate replace to="users" />} />
 						<Route path="users" element={<div>Users</div>} />
-						<Route path="challenges" element={<div>Challenges</div>} />
+						<Route path="challenges" element={<Challenges />} />
+						<Route path="challenges/create" element={<div>CREATE</div>} />
 						<Route
 							path="submissions/*"
 							element={

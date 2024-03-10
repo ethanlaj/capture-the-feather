@@ -20,4 +20,9 @@ router.get("/", verifyAccess, errorHandler(async (req: Request, res: Response) =
 	return res.json(challenges);
 }));
 
+router.get("/admin", verifyAccess, errorHandler(async (_req: Request, res: Response) => {
+	const challenges = await Challenge.findAll();
+	return res.json(challenges);
+}));
+
 export default router;

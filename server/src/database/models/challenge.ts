@@ -75,12 +75,15 @@ class Challenge extends Model {
 
 	@Column(DataType.VIRTUAL)
 	get isSolved(): boolean {
+		if (!this.attempts) {
+			return false;
+		}
 		return this.attempts.some(attempt => attempt.isCorrect);
 	}
 
 	@Column(DataType.VIRTUAL)
 	get isExhausted(): boolean {
-		if (this.maxAttempts === 0) {
+		if (!this.attempts || this.maxAttempts === 0) {
 			return false;
 		}
 
@@ -94,6 +97,10 @@ class Challenge extends Model {
 
 	@Column(DataType.VIRTUAL)
 	get attemptsLeft(): number {
+		if (!this.attempts) {
+			return 0;
+		}
+
 		return this.maxAttempts - this.attempts.length;
 	}
 

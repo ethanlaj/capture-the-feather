@@ -26,7 +26,7 @@ function ChallengesView() {
 	useEffect(() => {
 		async function getChallenges() {
 			try {
-				const response = await ChallengeService.getChallenges();
+				const response = await ChallengeService.getChallenges(false);
 				const categories = _.groupBy(response, "category");
 
 				const categoriesArray: Category[] = [];
