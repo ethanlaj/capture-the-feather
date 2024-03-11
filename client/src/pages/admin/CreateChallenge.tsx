@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Alert, Button, Form, Input, Radio } from "antd";
+import { Alert, Button, Card, Checkbox, Flex, Form, Input, Radio } from "antd";
+import { CloseCircleOutlined } from "@ant-design/icons";
 import ReactQuill from "react-quill";
 import TextArea from "antd/es/input/TextArea";
 import { useForm, useWatch } from "antd/es/form/Form";
@@ -142,7 +143,45 @@ const CreateChallenge = () => {
 						</Form.List>
 					</Form.Item>
 				) : challengeType === "short-answer" ? (
-					<div>SA</div>
+					<Form.List name="shortAnswerOptions" initialValue={[]}>
+						{(fields, { add, remove }) => (
+							<div>
+								{fields.map((field) => (
+									<Card className="relative">
+										<CloseCircleOutlined
+											className="absolute right-3 top-3 text-xl text-red-400"
+											onClick={() => remove(field.name)}
+										/>
+										<Flex>
+											<Form.Item
+												{...field}
+												name="isCaseSensitive"
+												className="mb-2 w-full"
+											>
+												<Checkbox>Case Sensitive?</Checkbox>
+											</Form.Item>
+											<Form.Item
+												{...field}
+												name="isRegularExpression"
+												className="mb-2 w-full"
+											>
+												<Checkbox>Regular Expression?</Checkbox>
+											</Form.Item>
+										</Flex>
+										<Form.Item {...field} className="mb-2 w-full">
+											<Input placeholder="Enter option" />
+										</Form.Item>
+										<Button danger onClick={() => remove(field.name)}>
+											Remove
+										</Button>
+									</Card>
+								))}
+								<Button type="dashed" onClick={() => add()} block>
+									+ Add Option
+								</Button>
+							</div>
+						)}
+					</Form.List>
 				) : null}
 
 				<Form.Item>
