@@ -1,5 +1,5 @@
 import { useUser } from "@/contexts/UserContext";
-import { UserService } from "@/services/userService";
+import { MeService } from "@/services/meService";
 import { ClientError } from "@/types/ClientError";
 import { ClientSuccess } from "@/types/ClientSuccess";
 import { Form, Input, Button } from "antd";
@@ -24,9 +24,9 @@ const Register = () => {
 
 	const onFinish = async (values: FormValues) => {
 		try {
-			const response = await UserService.register(values);
-			UserService.setAccessToken(response.accessToken);
-			UserService.setRefreshToken(response.refreshToken);
+			const response = await MeService.register(values);
+			MeService.setAccessToken(response.accessToken);
+			MeService.setRefreshToken(response.refreshToken);
 
 			setUser(response.user);
 

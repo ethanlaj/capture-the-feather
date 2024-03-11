@@ -1,5 +1,5 @@
 import { useUser } from "@/contexts/UserContext";
-import { UserService } from "@/services/userService";
+import { MeService } from "@/services/meService";
 import { Button, Layout } from "antd";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 const { Header } = Layout;
@@ -15,13 +15,13 @@ const Navbar = () => {
 		"/challenges": "Challenges",
 		"/leaderboard": "Leaderboard",
 		"/badges": "Badges",
-		"/admin": "Admin",
+		...(user && user.isAdmin ? { "/admin": "Admin" } : {}),
 	};
 
 	const isLoggedIn = user != null;
 
 	const logout = () => {
-		UserService.logout();
+		MeService.logout();
 		setUser(null);
 		navigate("/");
 	};

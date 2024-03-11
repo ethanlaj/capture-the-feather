@@ -14,6 +14,8 @@ import Badges from "./pages/Badges";
 import AdminLayout from "./pages/admin/Admin";
 import UserRouteLayout from "./components/UserRouteLayout";
 import Challenges from "./pages/admin/Challenges";
+import Users from "./pages/admin/Users";
+import CreateChallenge from "./pages/admin/CreateChallenge";
 
 const { Content } = Layout;
 
@@ -45,22 +47,22 @@ const App = () => {
 					</Route>
 					<Route path="/admin" element={<AdminLayout />}>
 						<Route index element={<Navigate replace to="users" />} />
-						<Route path="users" element={<div>Users</div>} />
+						<Route path="users" element={<Users />} />
 						<Route path="challenges" element={<Challenges />} />
-						<Route path="challenges/create" element={<div>CREATE</div>} />
+						<Route path="challenges/create" element={<CreateChallenge />} />
 						<Route
-							path="submissions/*"
+							path="attempts/*"
 							element={
 								<>
-									<div>Submissions</div>
+									<div>Attempts</div>
 									<Outlet />
 								</>
 							}
 						>
-							<Route path="all" element={<div>All Submissions</div>} />
+							<Route path="all" element={<div>All Attempts</div>} />
 							<Route path="manual" element={<div>Manual Review</div>} />
-							<Route path="correct" element={<div>Correct Submissions</div>} />
-							<Route path="incorrect" element={<div>Incorrect Submissions</div>} />
+							<Route path="correct" element={<div>Correct Attempts</div>} />
+							<Route path="incorrect" element={<div>Incorrect Attempts</div>} />
 						</Route>
 						<Route path="settings" element={<div>Settings</div>} />
 					</Route>

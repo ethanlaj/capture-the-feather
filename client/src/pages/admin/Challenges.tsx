@@ -52,7 +52,7 @@ const Challenges = () => {
 	];
 
 	return (
-		<div className="p-4">
+		<>
 			<Button
 				type="primary"
 				icon={<PlusOutlined />}
@@ -62,7 +62,7 @@ const Challenges = () => {
 				Create
 			</Button>
 			<Table pagination={false} dataSource={challenges} columns={columns} rowKey="id" />
-		</div>
+		</>
 	);
 };
 

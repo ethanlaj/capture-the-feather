@@ -13,3 +13,7 @@
 body {
 	margin: 0;
 }
+
+.ql-editor {
+	height: 300px !important;
+}

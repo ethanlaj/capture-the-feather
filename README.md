@@ -18,5 +18,7 @@ For Milestone 1, the plan is to finish the basic functionality of the platform f
 **Milestone 2 - Due Mar 25 by 12:59am**
 For Milestone 2, the plan is to finish the basic functionality of the platform for admins. This will include creating challenges, editing challenges, deleting challenges, and managing users.
 
+-   [3/10/24] - Basic Admin view has been created. Admins can view challenges and users. The UI for creating challenges has been started.
+
 **Milestone 3 - Due Apr 15 by 12:59am**
 For Milestone 3, the plan is to create an event/challenge exporter and uploader. This will only include the format created by our platform. If time permits, I may begin to look into how to create a challenge importer for other platforms.

@@ -1,9 +1,9 @@
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { notification } from 'antd';
-import { UserService } from '@/services/userService';
 import { ClientError } from '@/types/ClientError';
 import { useUser } from '@/contexts/UserContext';
+import { MeService } from '@/services/meService';
 
 const urlsToAddAuth = [
 	'http://localhost:3001',
@@ -39,18 +39,18 @@ const useInterceptor = () => {
 
 				// No new token, attempt to get a new one
 				try {
-					const response = await UserService.getNewTokens();
+					const response = await MeService.getNewTokens();
 
 					if (response.accessToken) {
-						UserService.setAccessToken(response.accessToken);
-						UserService.setRefreshToken(response.refreshToken);
+						MeService.setAccessToken(response.accessToken);
+						MeService.setRefreshToken(response.refreshToken);
 
 						originalRequest.headers.Authorization = `Bearer ${response.accessToken}`;
 						return axios(originalRequest);
 					}
 				} catch (error) {
 					new ClientError(new Error("Session expired, please login again")).toast();
-					UserService.logout();
+					MeService.logout();
 					setUser(null);
 
 					navigate('/login');

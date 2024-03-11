@@ -1,5 +1,6 @@
 import { Header } from "antd/es/layout/layout";
 import { Link, Outlet, useLocation } from "react-router-dom";
+import "react-quill/dist/quill.snow.css";
 
 const AdminLayout = () => {
 	const location = useLocation();
@@ -8,7 +9,7 @@ const AdminLayout = () => {
 	const adminNavLinks = {
 		"/admin/users": "Users",
 		"/admin/challenges": "Challenges",
-		"/admin/submissions/all": "Submissions",
+		"/admin/attempts/all": "Attempts",
 		"/admin/settings": "Settings",
 	};
 
