@@ -4,6 +4,7 @@ import { Challenge } from "../database/models";
 import { ChallengeService } from "../services/challengeService";
 import { verifyAccess } from "../middleware/verifyAccess";
 import { verifyIsAdmin } from "../middleware/verifyIsAdmin";
+import { KubernetesService } from "../services/kubernetesService";
 
 const router = Router();
 
@@ -19,6 +20,14 @@ router.get("/", verifyAccess, errorHandler(async (req: Request, res: Response) =
 	}
 
 	return res.json(challenges);
+}));
+
+router.post("/:id/container", errorHandler(async (req: Request, res: Response) => {
+	const challengeId = req.params.id;
+
+	const resp = await KubernetesService.createDeployment(challengeId, "nginxdemos/hello");
+
+	res.json(resp);
 }));
 
 router.get("/admin", verifyIsAdmin, errorHandler(async (_req: Request, res: Response) => {
