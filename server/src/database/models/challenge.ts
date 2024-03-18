@@ -68,6 +68,18 @@ class Challenge extends Model {
 	@Column(DataType.INTEGER)
 	maxAttempts!: number;
 
+	@AllowNull(true)
+	@Column(DataType.STRING)
+	containerImage!: string;
+
+	@AllowNull(true)
+	@Column(DataType.STRING)
+	containerInstructions!: string;
+
+	@AllowNull(true)
+	@Column(DataType.JSON)
+	containerPorts!: number[];
+
 	@AllowNull(false)
 	@Default(0)
 	@Column(DataType.INTEGER)
