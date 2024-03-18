@@ -7,17 +7,35 @@ const k8sApi = kc.makeApiClient(k8s.CoreV1Api);
 const k8sAppsApi = kc.makeApiClient(k8s.AppsV1Api);
 
 export class KubernetesService {
-	static async createDeployment(challengeId: string, containerImage: string) {
+	static async createDeployment(challengeId: number, userId: number, containerImage: string, ports: number[]) {
 		try {
-			let getNamespaceResult = await this.getNamespace(challengeId);
-			const namespace = getNamespaceResult.exists ? getNamespaceResult.namespace : await this.createNamespace(challengeId);
-			const namespaceName = namespace!.metadata!.name!;
+			const namespaceName = `challenge-${challengeId}`;
+			const getNamespaceResult = await this.getNamespace(namespaceName);
+			if (!getNamespaceResult.exists) {
+				await this.createNamespace(namespaceName);
+			}
 
-			await this.createDeploymentInNamespace(challengeId, namespaceName, containerImage);
-			const serviceRes = await KubernetesService.createServiceForDeployment(challengeId, namespaceName);
-			return serviceRes;
+			await this.createDeploymentInNamespace(challengeId, userId, namespaceName, containerImage, ports);
+			const serviceRes = await KubernetesService.createServiceForDeployment(challengeId, userId, namespaceName, ports);
+			return serviceRes.spec?.ports;
 		} catch (error) {
 			console.error(error);
+		}
+	}
+
+	static async deleteDeployment(challengeId: number, userId: number) {
+		const namespaceName = `challenge-${challengeId}`;
+
+		try {
+			await k8sAppsApi.deleteNamespacedDeployment(`deployment-${challengeId}-${userId}`, namespaceName);
+		} catch (error) {
+			console.error(`Error deleting deployment for challengeId ${challengeId} and userId ${userId}:`, error);
+		}
+
+		try {
+			await k8sApi.deleteNamespacedService(`service-${challengeId}-${userId}`, namespaceName);
+		} catch (error) {
+			console.error(`Error deleting service for challengeId ${challengeId} and userId ${userId}:`, error);
 		}
 	}
 
@@ -48,32 +66,35 @@ export class KubernetesService {
 		return (await k8sApi.createNamespace(namespace)).body
 	}
 
-	private static async createDeploymentInNamespace(challengeId: string, namespace: string, containerImage: string) {
+	private static async createDeploymentInNamespace(challengeId: number, userId: number, namespace: string, containerImage: string, ports: number[]) {
+		const appName = `app-${challengeId}-${userId}`;
+		const containerPorts = ports.map(port => ({ containerPort: port }));
+
 		const deployment = {
 			apiVersion: 'apps/v1',
 			kind: 'Deployment',
 			metadata: {
-				name: `deployment-${challengeId}`,
+				name: `deployment-${challengeId}-${userId}`,
 				namespace: namespace,
 			},
 			spec: {
 				replicas: 1,
 				selector: {
 					matchLabels: {
-						app: `app-${challengeId}`,
+						app: appName,
 					},
 				},
 				template: {
 					metadata: {
 						labels: {
-							app: `app-${challengeId}`,
+							app: appName,
 						},
 					},
 					spec: {
 						containers: [{
 							name: `container-${challengeId}`,
 							image: containerImage,
-							ports: [{ containerPort: 80 }],
+							ports: containerPorts,
 						}],
 					},
 				},
@@ -83,24 +104,26 @@ export class KubernetesService {
 		return (await k8sAppsApi.createNamespacedDeployment(namespace, deployment)).body;
 	}
 
-	static async createServiceForDeployment(challengeId: string, namespace: string) {
+	static async createServiceForDeployment(challengeId: number, userId: number, namespace: string, ports: number[]) {
+		const servicePorts = ports.map(port => ({
+			protocol: 'TCP',
+			port: port, // The external port, accessible from outside the cluster
+			targetPort: port, // The target port on the container
+		}));
+
 		const service = {
 			apiVersion: 'v1',
 			kind: 'Service',
 			metadata: {
-				name: `service-${challengeId}`,
+				name: `service-${challengeId}-${userId}`,
 				namespace: namespace,
 			},
 			spec: {
 				type: 'NodePort',
 				selector: {
-					app: `app-${challengeId}`,
+					app: `app-${challengeId}-${userId}`,
 				},
-				ports: [{
-					protocol: 'TCP',
-					port: 80, // The port your container is listening on
-					targetPort: 3333, // The target port on the container
-				}],
+				ports: servicePorts,
 			},
 		};
 
