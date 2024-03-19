@@ -15,7 +15,7 @@ const FormItemLabelWithSubLabel = ({
 	subLabelRender,
 }: FormItemLabelWithSubLabelProps) => (
 	<div className="ant-form-item">
-		<div className="ant-form-item-label">
+		<div className="ant-form-item-label" style={{ paddingBottom: "0" }}>
 			<label className={isRequired ? "ant-form-item-required" : ""}>{label}</label>
 		</div>
 		{subLabelRender && subLabelRender()}

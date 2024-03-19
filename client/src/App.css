@@ -17,3 +17,25 @@ body {
 .ql-editor {
 	height: 300px !important;
 }
+
+.ant-form-item-has-error .quill#description {
+	border: 1px solid #ff4d4f;
+}
+
+.ant-form-item-has-error .ql-toolbar.ql-snow {
+	border-left: none;
+	border-right: none;
+	border-top: none;
+}
+
+.ant-form-item-has-error .ql-container.ql-snow {
+	border: none;
+}
+
+.ql-container.ql-snow {
+	background-color: white;
+}
+
+.ql-toolbar.ql-snow {
+	background-color: white;
+}

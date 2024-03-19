@@ -16,6 +16,9 @@ const CreateChallenge = () => {
 	const pointsType = useWatch("pointsType", form);
 	const challengeType = useWatch("challengeType", form);
 	const isContainer = useWatch("isContainer", form);
+	const descriptionValue = useWatch("description", form);
+
+	console.log(descriptionValue);
 
 	const onFinish = (values: any) => {
 		console.log(values);
@@ -51,7 +54,26 @@ const CreateChallenge = () => {
 					/>
 				</Form.Item>
 
-				<Form.Item label="Description" name="description" rules={[{ required: true }]}>
+				<Form.Item
+					label="Description"
+					name="description"
+					rules={[
+						{ required: true },
+						{
+							validator: (_, value) => {
+								// create a new element to check if the value is just an empty paragraph
+								const temp = document.createElement("div");
+								temp.innerHTML = value;
+								value = temp.textContent || temp.innerText || "";
+
+								if (value.trim() === "") {
+									return Promise.reject("'description' is required");
+								}
+								return Promise.resolve();
+							},
+						},
+					]}
+				>
 					<ReactQuill theme="snow" value={description} onChange={setDescription} />
 				</Form.Item>
 
