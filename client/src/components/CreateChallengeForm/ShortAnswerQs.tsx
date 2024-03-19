@@ -6,7 +6,11 @@ const ShortAnswerQs = () => {
 	const nextKeyRef = useRef(1);
 
 	return (
-		<Form.Item label="Short Answer Options">
+		<Form.Item
+			name="shortAnswerOptions"
+			label="Short Answer Options"
+			rules={[{ required: true }]}
+		>
 			<Form.List
 				key="shortAnswerOptions"
 				name="shortAnswerOptions"

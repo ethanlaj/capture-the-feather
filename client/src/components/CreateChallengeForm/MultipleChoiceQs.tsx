@@ -5,7 +5,11 @@ const MultipleChoiceQs = () => {
 	const nextKeyRef = useRef(4);
 
 	return (
-		<Form.Item label="Multiple Choice Options">
+		<Form.Item
+			name="multipleChoiceOptions"
+			label="Multiple Choice Options"
+			rules={[{ required: true }]}
+		>
 			<Form.List
 				key="multipleChoiceOptions"
 				name="multipleChoiceOptions"
