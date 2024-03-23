@@ -6,6 +6,7 @@ import { verifyAccess } from "../middleware/verifyAccess";
 import { verifyIsAdmin } from "../middleware/verifyIsAdmin";
 import { KubernetesService } from "../services/kubernetesService";
 import { requireBody } from "../middleware/requireBody";
+import { ChallengeType } from "../database/models/challenge";
 
 const router = Router();
 
@@ -23,20 +24,31 @@ router.get("/", verifyAccess, errorHandler(async (req: Request, res: Response) =
 	return res.json(challenges);
 }));
 
-router.post("/",
+router.get("/admin/:id", verifyIsAdmin, errorHandler(async (req: Request, res: Response) => {
+	const challengeId = Number(req.params.id);
+
+	const challenge = await Challenge.scope("withoutUserAttempts").findByPk(challengeId);
+	if (!challenge) {
+		return res.status(404).json({ error: "Challenge not found" });
+	}
+
+	return res.json(challenge);
+}));
+
+const requiredFields = [
+	'title',
+	'category',
+	'shortDescription',
+	'description',
+	'maxAttempts',
+	'pointsType',
+	'challengeType',
+	'points',
+];
+
+router.post("/admin",
 	verifyIsAdmin,
-	requireBody(
-		[ // Basic required fields
-			'title',
-			'category',
-			'shortDescription',
-			'description',
-			'maxAttempts',
-			'pointsType',
-			'challengeType',
-			'points',
-		]
-	),
+	requireBody(requiredFields),
 	errorHandler(async (req: Request, res: Response) => {
 		const t = await Challenge.sequelize!.transaction();
 
@@ -53,6 +65,103 @@ router.post("/",
 			console.error(error);
 			await t.rollback();
 			return res.status(500).json({ error: "Failed to create challenge" });
+		}
+	})
+);
+
+router.put("/admin/:id",
+	verifyIsAdmin,
+	requireBody(requiredFields),
+	errorHandler(async (req: Request, res: Response) => {
+		const challengeId = Number(req.params.id);
+		const challenge = await Challenge.findByPk(challengeId, {
+			include: [{
+				model: MultipleChoiceOption,
+				attributes: ["id"]
+			}, {
+				model: ShortAnswerOption,
+				attributes: ["id"]
+			}]
+		})
+		if (!challenge) {
+			return res.status(404).json({ error: "Challenge not found" });
+		}
+
+		const t = await Challenge.sequelize!.transaction();
+
+		try {
+			await challenge.update(req.body, {
+				transaction: t,
+			});
+
+			if (challenge.type === ChallengeType.MultipleChoice) {
+				const options = req.body.multipleChoiceOptions;
+				const optionsToDelete = challenge.multipleChoiceOptions.filter(option => !options.some((o: any) => !o.isNew && o.id === option.id));
+				await MultipleChoiceOption.destroy({
+					where: {
+						id: optionsToDelete.map((o: any) => o.id)
+					},
+					transaction: t
+				});
+
+				await ShortAnswerOption.destroy({
+					where: {
+						challengeId: challenge.id
+					},
+					transaction: t
+				});
+
+				for (let option of options) {
+					if (option.isNew) {
+						await MultipleChoiceOption.create({
+							challengeId: challenge.id,
+							...option,
+							id: undefined
+						}, { transaction: t });
+					} else {
+						const existingOption = challenge.multipleChoiceOptions.find(o => o.id === option.id);
+						await existingOption!.update(option, { transaction: t });
+					}
+				}
+			} else if (challenge.type === ChallengeType.ShortAnswer) {
+				const options = req.body.shortAnswerOptions;
+				const optionsToDelete = challenge.shortAnswerOptions.filter(option => !options.some((o: any) => !o.isNew && o.id === option.id));
+				await ShortAnswerOption.destroy({
+					where: {
+						id: optionsToDelete.map((o: any) => o.id)
+					},
+					transaction: t
+				});
+
+				await MultipleChoiceOption.destroy({
+					where: {
+						challengeId: challenge.id
+					},
+					transaction: t
+				});
+
+				for (let option of options) {
+					if (option.isNew) {
+						await ShortAnswerOption.create({
+							challengeId: challenge.id,
+							...option,
+							id: undefined
+						}, { transaction: t });
+					} else {
+						const existingOption = challenge.shortAnswerOptions.find(o => o.id === option.id);
+						console.log(existingOption);
+						await existingOption!.update(option, { transaction: t });
+					}
+				}
+			}
+
+			await t.commit();
+
+			return res.sendStatus(201);
+		} catch (error) {
+			console.error(error);
+			await t.rollback();
+			return res.status(500).json({ error: "Failed to update challenge" });
 		}
 	})
 );

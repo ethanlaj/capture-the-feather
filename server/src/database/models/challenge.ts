@@ -26,6 +26,16 @@ export enum PointsType {
 			},
 			ShortAnswerOption,
 		]
+	}),
+	withoutUserAttempts: () => ({
+		include: [
+			{
+				model: MultipleChoiceOption,
+				order: [['order', 'ASC']],
+				separate: true,
+			},
+			ShortAnswerOption,
+		]
 	})
 }))
 @Table

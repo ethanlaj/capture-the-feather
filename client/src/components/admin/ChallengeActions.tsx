@@ -3,7 +3,7 @@ import { EditOutlined, DeleteOutlined, ExclamationCircleOutlined } from "@ant-de
 import { Challenge } from "@/types/Challenge";
 import { useNavigate } from "react-router-dom";
 
-const { error } = Modal;
+const { confirm } = Modal;
 
 interface Props {
 	challenge: Challenge;
@@ -14,9 +14,9 @@ const ChallengeActions = ({ challenge, handleDelete }: Props) => {
 	const navigate = useNavigate();
 
 	const showDeleteConfirm = () => {
-		error({
+		confirm({
 			title: `Are you sure delete challenge "${challenge.title}"?`,
-			icon: <ExclamationCircleOutlined />,
+			icon: <ExclamationCircleOutlined style={{ color: "red" }} />,
 			content: "This action cannot be undone",
 			okText: "Yes, delete it",
 			okType: "danger",
@@ -34,11 +34,8 @@ const ChallengeActions = ({ challenge, handleDelete }: Props) => {
 	return (
 		<div className="flex justify-center gap-1">
 			<Button
-				icon={
-					<EditOutlined
-						onClick={() => navigate(`/admin/challenges/edit/${challenge.id}`)}
-					/>
-				}
+				onClick={() => navigate(`/admin/challenges/edit/${challenge.id}`)}
+				icon={<EditOutlined />}
 			/>
 			<Button danger icon={<DeleteOutlined />} onClick={showDeleteConfirm} />
 		</div>

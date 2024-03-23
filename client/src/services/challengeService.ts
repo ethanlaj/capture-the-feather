@@ -11,11 +11,20 @@ export class ChallengeService {
 		return response.data;
 	}
 
+	static async getChallenge(id: number): Promise<Challenge> {
+		const response = await axios.get(`${adminUrl}/${id}`);
+		return response.data;
+	}
+
 	static async createChallenge(challenge: any): Promise<void> {
 		return await axios.post(url, challenge);
 	}
 
+	static async updateChallenge(id: number, challenge: any): Promise<void> {
+		return await axios.put(`${adminUrl}/${id}`, challenge);
+	}
+
 	static async deleteChallenge(id: number): Promise<void> {
-		return await axios.delete(`${url}/${id}`);
+		return await axios.delete(`${adminUrl}/${id}`);
 	}
 }

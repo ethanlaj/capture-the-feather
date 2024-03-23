@@ -30,10 +30,10 @@ const MultipleChoiceQs = () => {
 				key="multipleChoiceOptions"
 				name="multipleChoiceOptions"
 				initialValue={[
-					{ name: 0, key: 0 },
-					{ name: 1, key: 1 },
-					{ name: 2, key: 2 },
-					{ name: 3, key: 3 },
+					{ name: 0, key: 0, isNew: true },
+					{ name: 1, key: 1, isNew: true },
+					{ name: 2, key: 2, isNew: true },
+					{ name: 3, key: 3, isNew: true },
 				]}
 			>
 				{(fields, { add, remove }) => (
@@ -73,7 +73,11 @@ const MultipleChoiceQs = () => {
 							type="dashed"
 							onClick={() => {
 								add(
-									{ name: nextKeyRef.current, key: nextKeyRef.current },
+									{
+										name: nextKeyRef.current,
+										key: nextKeyRef.current,
+										isNew: true,
+									},
 									fields.length
 								);
 								nextKeyRef.current += 1;

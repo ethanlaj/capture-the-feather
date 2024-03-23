@@ -14,7 +14,7 @@ const ShortAnswerQs = () => {
 			<Form.List
 				key="shortAnswerOptions"
 				name="shortAnswerOptions"
-				initialValue={[{ name: 0, key: 0 }]}
+				initialValue={[{ name: 0, key: 0, isNew: true }]}
 			>
 				{(fields, { add, remove }) => (
 					<div className="flex flex-col gap-2">
@@ -30,7 +30,11 @@ const ShortAnswerQs = () => {
 							type="dashed"
 							onClick={() => {
 								add(
-									{ name: nextKeyRef.current, key: nextKeyRef.current },
+									{
+										name: nextKeyRef.current,
+										key: nextKeyRef.current,
+										isNew: true,
+									},
 									fields.length
 								);
 								nextKeyRef.current += 1;

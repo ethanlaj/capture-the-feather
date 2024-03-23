@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Button, Checkbox, Form, Input, InputNumber, Radio } from "antd";
 import ReactQuill from "react-quill";
 import TextArea from "antd/es/input/TextArea";
@@ -9,19 +9,64 @@ import DynamicPointQs from "@/components/admin/CreateChallengeForm/DynamicPointQ
 import MultipleChoiceQs from "@/components/admin/CreateChallengeForm/MultipleChoiceQs";
 import ShortAnswerQs from "@/components/admin/CreateChallengeForm/ShortAnswerQs";
 import ContainerQs from "@/components/admin/CreateChallengeForm/ContainerQs";
-import { PointsType } from "@/types/Challenge";
+import {
+	ChallengeType,
+	MultipleChoiceChallenge,
+	PointsType,
+	ShortAnswerChallenge,
+} from "@/types/Challenge";
 import { ChallengeService } from "@/services/challengeService";
 import { ClientError } from "@/types/ClientError";
+import { useNavigate, useParams } from "react-router-dom";
+
+interface CreateChallengeForm {
+	title: string;
+	category: string;
+	shortDescription: string;
+	description: string;
+	pointsType: PointsType;
+	points: number;
+	maxAttempts: number;
+	minPoints: number;
+	decay: number;
+	isContainer: boolean;
+	containerImage: string;
+	containerPorts: {
+		key: number;
+		name: number;
+		port: number;
+	}[];
+	containerInstructions: string;
+	challengeType: ChallengeType;
+	multipleChoiceOptions: {
+		key: number;
+		name: number;
+		option: string;
+		isCorrect: boolean;
+	}[];
+	shortAnswerOptions: {
+		key: number;
+		name: number;
+		option: string;
+		isCorrect: boolean;
+		isCaseSensitive: boolean;
+		isRegularExpression: boolean;
+		regExp: string;
+	}[];
+}
 
 const CreateChallenge = () => {
 	const [description, setDescription] = useState("");
-	const [form] = useForm();
+	const navigate = useNavigate();
+	const [form] = useForm<CreateChallengeForm>();
+	const idStr = useParams().id;
+	const id = idStr ? parseInt(idStr) : null;
 
 	const pointsType = useWatch("pointsType", form);
 	const challengeType = useWatch("challengeType", form);
 	const isContainer = useWatch("isContainer", form);
 
-	const onFinish = async (values: any) => {
+	const onFinish = async (values: CreateChallengeForm) => {
 		const challenge = {
 			category: values.category,
 			title: values.title,
@@ -41,7 +86,7 @@ const CreateChallenge = () => {
 			...(values.isContainer
 				? {
 						containerImage: values.containerImage,
-						containerPorts: values.containerPorts.map((port: number) => port),
+						containerPorts: values.containerPorts.map((port) => port.port),
 						containerInstructions: values.containerInstructions,
 				  }
 				: {}),
@@ -50,8 +95,10 @@ const CreateChallenge = () => {
 				? {
 						multipleChoiceOptions: values.multipleChoiceOptions.map((option: any) => {
 							return {
+								id: option.key,
 								value: option.option,
 								isCorrect: option.isCorrect,
+								isNew: option.isNew,
 							};
 						}),
 				  }
@@ -60,11 +107,13 @@ const CreateChallenge = () => {
 				? {
 						shortAnswerOptions: values.shortAnswerOptions.map((option: any) => {
 							return {
+								id: option.key,
 								value: option.option,
 								isCorrect: option.isCorrect,
 								isCaseSensitive: option.isCaseSensitive,
 								matchMode: option.isRegularExpression ? "regex" : "static",
 								regExp: option.regExp,
+								isNew: option.isNew,
 							};
 						}),
 				  }
@@ -72,16 +121,58 @@ const CreateChallenge = () => {
 		};
 
 		try {
-			await ChallengeService.createChallenge(challenge);
+			if (id) {
+				await ChallengeService.updateChallenge(id, challenge);
+			} else {
+				await ChallengeService.createChallenge(challenge);
+			}
 		} catch (error) {
 			console.log(error);
 			new ClientError(error).toast();
 		}
 	};
 
+	const getChallenge = useCallback(
+		async (id: number) => {
+			const result = await ChallengeService.getChallenge(id);
+			form.setFieldsValue({
+				...result,
+				challengeType: result.type,
+				shortAnswerOptions: (result as ShortAnswerChallenge).shortAnswerOptions?.map(
+					(option) => {
+						return {
+							key: option.id,
+							name: option.id,
+							option: option.value,
+							isCaseSensitive: option.isCaseSensitive,
+							isRegularExpression: option.matchMode === "regex",
+						};
+					}
+				),
+				multipleChoiceOptions: (
+					result as MultipleChoiceChallenge
+				).multipleChoiceOptions?.map((option) => {
+					return {
+						key: option.id,
+						name: option.id,
+						option: option.value,
+						isCorrect: option.isCorrect,
+					};
+				}),
+			});
+		},
+		[form]
+	);
+
+	useEffect(() => {
+		if (id) {
+			getChallenge(id);
+		}
+	}, [form, getChallenge, id]);
+
 	return (
 		<>
-			<h1 className="text-center">Create Challenge</h1>
+			<h1 className="text-center">{id ? "Update Challenge" : "Create Challenge"}</h1>
 			<Form form={form} layout="vertical" onFinish={onFinish}>
 				<Form.Item label="Title" name="title" rules={[{ required: true }]}>
 					<Input showCount maxLength={20} placeholder="Enter challenge title" />
@@ -187,9 +278,14 @@ const CreateChallenge = () => {
 				{isContainer ? <ContainerQs /> : null}
 
 				<Form.Item>
-					<Button type="primary" htmlType="submit">
-						Submit
-					</Button>
+					<div className="flex gap-2">
+						<Button htmlType="button" onClick={() => navigate("/admin/challenges")}>
+							Cancel
+						</Button>
+						<Button type="primary" htmlType="submit">
+							Submit
+						</Button>
+					</div>
 				</Form.Item>
 			</Form>
 		</>
