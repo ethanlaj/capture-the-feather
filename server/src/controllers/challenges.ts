@@ -1,10 +1,11 @@
 import { Request, Response, Router } from "express";
 import errorHandler from "../middleware/errorHandler";
-import { Challenge, Container } from "../database/models";
+import { Challenge, Container, MultipleChoiceOption, ShortAnswerOption } from "../database/models";
 import { ChallengeService } from "../services/challengeService";
 import { verifyAccess } from "../middleware/verifyAccess";
 import { verifyIsAdmin } from "../middleware/verifyIsAdmin";
 import { KubernetesService } from "../services/kubernetesService";
+import { requireBody } from "../middleware/requireBody";
 
 const router = Router();
 
@@ -20,6 +21,57 @@ router.get("/", verifyAccess, errorHandler(async (req: Request, res: Response) =
 	}
 
 	return res.json(challenges);
+}));
+
+router.post("/",
+	verifyIsAdmin,
+	requireBody(
+		[ // Basic required fields
+			'title',
+			'category',
+			'shortDescription',
+			'description',
+			'maxAttempts',
+			'pointsType',
+			'challengeType',
+			'points',
+		]
+	),
+	errorHandler(async (req: Request, res: Response) => {
+		const t = await Challenge.sequelize!.transaction();
+
+		try {
+			await Challenge.create(req.body, {
+				transaction: t,
+				include: [MultipleChoiceOption, ShortAnswerOption]
+			});
+
+			await t.commit();
+
+			return res.sendStatus(201);
+		} catch (error) {
+			console.error(error);
+			await t.rollback();
+			return res.status(500).json({ error: "Failed to create challenge" });
+		}
+	})
+);
+
+router.delete("/:id", verifyIsAdmin, errorHandler(async (req: Request, res: Response) => {
+	const challengeId = Number(req.params.id);
+
+	const challenge = await Challenge.findByPk(challengeId);
+	if (!challenge) {
+		return res.status(404).json({ error: "Challenge not found" });
+	}
+
+	try {
+		await challenge.destroy();
+		return res.sendStatus(200);
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ error: "Failed to delete challenge" });
+	}
 }));
 
 router.post("/:id/container", verifyAccess, errorHandler(async (req: Request, res: Response) => {

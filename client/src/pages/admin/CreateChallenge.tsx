@@ -4,11 +4,14 @@ import ReactQuill from "react-quill";
 import TextArea from "antd/es/input/TextArea";
 import { useForm, useWatch } from "antd/es/form/Form";
 import FormItemWithSublabel from "@/components/FormItemWithSubLabel";
-import StaticPointQs from "@/components/CreateChallengeForm/StaticPointQs";
-import DynamicPointQs from "@/components/CreateChallengeForm/DynamicPointQs";
-import MultipleChoiceQs from "@/components/CreateChallengeForm/MultipleChoiceQs";
-import ShortAnswerQs from "@/components/CreateChallengeForm/ShortAnswerQs";
-import ContainerQs from "@/components/CreateChallengeForm/ContainerQs";
+import StaticPointQs from "@/components/admin/CreateChallengeForm/StaticPointQs";
+import DynamicPointQs from "@/components/admin/CreateChallengeForm/DynamicPointQs";
+import MultipleChoiceQs from "@/components/admin/CreateChallengeForm/MultipleChoiceQs";
+import ShortAnswerQs from "@/components/admin/CreateChallengeForm/ShortAnswerQs";
+import ContainerQs from "@/components/admin/CreateChallengeForm/ContainerQs";
+import { PointsType } from "@/types/Challenge";
+import { ChallengeService } from "@/services/challengeService";
+import { ClientError } from "@/types/ClientError";
 
 const CreateChallenge = () => {
 	const [description, setDescription] = useState("");
@@ -18,8 +21,62 @@ const CreateChallenge = () => {
 	const challengeType = useWatch("challengeType", form);
 	const isContainer = useWatch("isContainer", form);
 
-	const onFinish = (values: any) => {
-		console.log(values);
+	const onFinish = async (values: any) => {
+		const challenge = {
+			category: values.category,
+			title: values.title,
+			shortDescription: values.shortDescription,
+			description: description,
+			type: values.challengeType,
+			pointsType: values.pointsType,
+			points: values.points,
+			maxAttempts: values.maxAttempts,
+			...(values.pointsType === PointsType.Dynamic
+				? {
+						minPoints: values.minPoints,
+						decay: values.decay,
+				  }
+				: {}),
+			isContainer: values.isContainer,
+			...(values.isContainer
+				? {
+						containerImage: values.containerImage,
+						containerPorts: values.containerPorts.map((port: number) => port),
+						containerInstructions: values.containerInstructions,
+				  }
+				: {}),
+			challengeType: values.challengeType,
+			...(values.challengeType === "multiple-choice"
+				? {
+						multipleChoiceOptions: values.multipleChoiceOptions.map((option: any) => {
+							return {
+								value: option.option,
+								isCorrect: option.isCorrect,
+							};
+						}),
+				  }
+				: {}),
+			...(values.challengeType === "short-answer"
+				? {
+						shortAnswerOptions: values.shortAnswerOptions.map((option: any) => {
+							return {
+								value: option.option,
+								isCorrect: option.isCorrect,
+								isCaseSensitive: option.isCaseSensitive,
+								matchMode: option.isRegularExpression ? "regex" : "static",
+								regExp: option.regExp,
+							};
+						}),
+				  }
+				: {}),
+		};
+
+		try {
+			await ChallengeService.createChallenge(challenge);
+		} catch (error) {
+			console.log(error);
+			new ClientError(error).toast();
+		}
 	};
 
 	return (

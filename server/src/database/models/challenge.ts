@@ -1,6 +1,16 @@
 import { Table, Column, Model, AllowNull, PrimaryKey, DataType, HasMany, AutoIncrement, Scopes, Default } from 'sequelize-typescript';
 import { MultipleChoiceOption, ShortAnswerOption, Attempt, PointLog } from '.';
 
+export enum ChallengeType {
+	MultipleChoice = "multiple-choice",
+	ShortAnswer = "short-answer",
+}
+
+export enum PointsType {
+	Static = "static",
+	Dynamic = "dynamic",
+}
+
 @Scopes(() => ({
 	withUserAttempts: (userId) => ({
 		include: [
@@ -42,12 +52,12 @@ class Challenge extends Model {
 	description!: string;
 
 	@AllowNull(false)
-	@Column(DataType.ENUM('multiple-choice', 'short-answer'))
-	type!: 'multiple-choice' | 'short-answer'
+	@Column(DataType.ENUM(...Object.values(ChallengeType)))
+	type!: ChallengeType
 
 	@AllowNull(false)
-	@Column(DataType.ENUM('standard', 'dynamic'))
-	pointsType!: 'standard' | 'dynamic';
+	@Column(DataType.ENUM(...Object.values(PointsType)))
+	pointsType!: PointsType;
 
 	// AKA initialPoints
 	@AllowNull(false)
@@ -67,6 +77,11 @@ class Challenge extends Model {
 	@AllowNull(false)
 	@Column(DataType.INTEGER)
 	maxAttempts!: number;
+
+	@AllowNull(false)
+	@Default(false)
+	@Column(DataType.BOOLEAN)
+	isContainer!: boolean;
 
 	@AllowNull(true)
 	@Column(DataType.STRING)

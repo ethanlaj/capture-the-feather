@@ -10,4 +10,12 @@ export class ChallengeService {
 		const response = await axios.get(isAdmin ? adminUrl : url);
 		return response.data;
 	}
+
+	static async createChallenge(challenge: any): Promise<void> {
+		return await axios.post(url, challenge);
+	}
+
+	static async deleteChallenge(id: number): Promise<void> {
+		return await axios.delete(`${url}/${id}`);
+	}
 }

@@ -5,6 +5,8 @@ import { Challenge } from "@/types/Challenge";
 import { ChallengeService } from "@/services/challengeService";
 import { useNavigate } from "react-router-dom";
 import { ColumnsType } from "antd/es/table";
+import ChallengeActions from "@/components/admin/ChallengeActions";
+import { ClientError } from "@/types/ClientError";
 
 const Challenges = () => {
 	const [challenges, setChallenges] = useState<Challenge[]>([]);
@@ -21,6 +23,16 @@ const Challenges = () => {
 
 	function handleCreateChallenge() {
 		navigate("/admin/challenges/create");
+	}
+
+	function handleDelete(challengeId: number) {
+		try {
+			ChallengeService.deleteChallenge(challengeId);
+			setChallenges(challenges.filter((c) => c.id !== challengeId));
+		} catch (error) {
+			console.error(error);
+			new ClientError(error).toast();
+		}
 	}
 
 	const columns: ColumnsType<Challenge> = [
@@ -48,6 +60,13 @@ const Challenges = () => {
 						return "Unknown";
 				}
 			},
+		},
+		{
+			title: "",
+			key: "actions",
+			render: (challenge: Challenge) => (
+				<ChallengeActions handleDelete={handleDelete} challenge={challenge} />
+			),
 		},
 	];
 

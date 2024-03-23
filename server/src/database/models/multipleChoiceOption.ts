@@ -1,4 +1,4 @@
-import { Table, Column, Model, AllowNull, PrimaryKey, DataType, BelongsTo, ForeignKey, AutoIncrement } from 'sequelize-typescript';
+import { Table, Column, Model, AllowNull, PrimaryKey, DataType, BelongsTo, ForeignKey, AutoIncrement, Default } from 'sequelize-typescript';
 import { Challenge } from '.';
 
 @Table
@@ -22,7 +22,8 @@ class MultipleChoiceOption extends Model {
 	@Column(DataType.BOOLEAN)
 	isCorrect!: boolean;
 
-	@AllowNull(false)
+	@AllowNull(true)
+	@Default(0)
 	@Column(DataType.INTEGER)
 	order!: number;
 

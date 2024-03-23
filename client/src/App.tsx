@@ -50,6 +50,7 @@ const App = () => {
 						<Route path="users" element={<Users />} />
 						<Route path="challenges" element={<Challenges />} />
 						<Route path="challenges/create" element={<CreateChallenge />} />
+						<Route path="challenges/edit/:id" element={<CreateChallenge />} />
 						<Route
 							path="attempts/*"
 							element={

@@ -1,5 +1,5 @@
 import { Alert, InputNumber } from "antd";
-import FormItemWithSublabel from "../FormItemWithSubLabel";
+import FormItemWithSublabel from "../../FormItemWithSubLabel";
 
 const DynamicPointQs = () => {
 	return (

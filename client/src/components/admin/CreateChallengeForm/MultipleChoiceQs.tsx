@@ -1,4 +1,4 @@
-import { Button, Form, Input } from "antd";
+import { Button, Checkbox, Form, Input } from "antd";
 import { useRef } from "react";
 
 const MultipleChoiceQs = () => {
@@ -8,7 +8,23 @@ const MultipleChoiceQs = () => {
 		<Form.Item
 			name="multipleChoiceOptions"
 			label="Multiple Choice Options"
-			rules={[{ required: true }]}
+			rules={[
+				{ required: true },
+				{
+					validator: (_, value) => {
+						const correctOptions = value.filter((option: any) => option.isCorrect);
+						if (correctOptions.length === 0) {
+							return Promise.reject("At least one option must be correct");
+						}
+
+						if (correctOptions.length > 1) {
+							return Promise.reject("Only one option can be correct");
+						}
+
+						return Promise.resolve();
+					},
+				},
+			]}
 		>
 			<Form.List
 				key="multipleChoiceOptions"
@@ -24,6 +40,14 @@ const MultipleChoiceQs = () => {
 					<>
 						{fields.map((field) => (
 							<div key={field.key} className="flex gap-2 w-full">
+								<Form.Item
+									name={[field.name, "isCorrect"]}
+									valuePropName="checked"
+									initialValue={false}
+									className="mb-2"
+								>
+									<Checkbox />
+								</Form.Item>
 								<Form.Item
 									name={[field.name, "option"]}
 									className="mb-2 w-full"

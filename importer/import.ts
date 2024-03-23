@@ -42,7 +42,7 @@ import { Challenge, ShortAnswerOption } from '../server/src/database/models';
 				shortDescription: data.name,
 				description: data.description,
 				type: "short-answer",
-				pointsType: data.type === 'dynamic' ? 'dynamic' : 'standard',
+				pointsType: data.type === 'dynamic' ? 'dynamic' : 'static',
 				points: data.value,
 				maxAttempts: 0,
 				order: index,

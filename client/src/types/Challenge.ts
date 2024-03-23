@@ -15,6 +15,11 @@ export enum ChallengeType {
 	ShortAnswer = "short-answer",
 }
 
+export enum PointsType {
+	Static = "static",
+	Dynamic = "dynamic",
+}
+
 interface BaseChallenge {
 	id: number;
 	category: string;
