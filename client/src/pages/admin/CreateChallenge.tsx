@@ -136,6 +136,14 @@ const CreateChallenge = () => {
 	const getChallenge = useCallback(
 		async (id: number) => {
 			const result = await ChallengeService.getChallenge(id);
+
+			// Needed so form can autopopulate required options if user switches challenge types
+			if (result.type === ChallengeType.MultipleChoice) {
+				delete (result as any).shortAnswerOptions;
+			} else if (result.type === ChallengeType.ShortAnswer) {
+				delete (result as any).multipleChoiceOptions;
+			}
+
 			form.setFieldsValue({
 				...result,
 				challengeType: result.type,
