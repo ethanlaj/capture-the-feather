@@ -1,11 +1,12 @@
 import { Request, Response, Router } from "express";
 import errorHandler from "../middleware/errorHandler";
-import { Attempt, Badge, Challenge } from "../database/models";
+import { Attempt, Badge, Challenge, MultipleChoiceOption, User } from "../database/models";
 import { ChallengeService } from "../services/challengeService";
 import { verifyAccess } from "../middleware/verifyAccess";
 import { AttemptService } from "../services/attemptService";
 import { PointService } from "../services/pointService";
 import { BadgeService } from "../services/badgeService";
+import { verifyIsAdmin } from "../middleware/verifyIsAdmin";
 
 const router = Router();
 
@@ -59,6 +60,19 @@ router.post("/:challengeId", verifyAccess, errorHandler(async (req: Request, res
 	}
 
 	return res.json({ challenge: updatedChallenge, badges });
+}));
+
+router.get("/admin", verifyIsAdmin, errorHandler(async (req: Request, res: Response) => {
+	const attempts = await Attempt.findAll({
+		include: [{
+			model: Challenge,
+			include: [MultipleChoiceOption]
+		}, {
+			model: User,
+			attributes: ["name"]
+		}]
+	});
+	return res.json(attempts);
 }));
 
 export default router;

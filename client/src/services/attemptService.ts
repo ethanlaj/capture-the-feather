@@ -2,8 +2,10 @@ import axios from 'axios';
 import { baseUrl } from '.';
 import { Challenge } from '@/types/Challenge';
 import { Badge } from '@/types/Badge';
+import { AttemptAdmin } from '@/types/Attempt';
 
 const url = baseUrl + '/attempts';
+const adminUrl = url + '/admin';
 
 export interface SubmitAttemptResponse {
 	challenge: Challenge;
@@ -18,6 +20,11 @@ export class AttemptService {
 			badge.imageUrl = baseUrl + badge.imageUrl;
 		}
 
+		return response.data;
+	}
+
+	static async getAttempts() {
+		const response = await axios.get<AttemptAdmin[]>(adminUrl);
 		return response.data;
 	}
 }

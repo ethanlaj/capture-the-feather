@@ -1,5 +1,5 @@
 import { Layout } from "antd";
-import { Routes, Route, Navigate, Outlet } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import ChallengesView from "./pages/ChallengesView";
 import Home from "./pages/Home";
@@ -16,6 +16,7 @@ import UserRouteLayout from "./components/UserRouteLayout";
 import Challenges from "./pages/admin/Challenges";
 import Users from "./pages/admin/Users";
 import CreateChallenge from "./pages/admin/CreateChallenge";
+import Attempts from "./pages/admin/Attempts";
 
 const { Content } = Layout;
 
@@ -51,20 +52,7 @@ const App = () => {
 						<Route path="challenges" element={<Challenges />} />
 						<Route path="challenges/create" element={<CreateChallenge />} />
 						<Route path="challenges/edit/:id" element={<CreateChallenge />} />
-						<Route
-							path="attempts/*"
-							element={
-								<>
-									<div>Attempts</div>
-									<Outlet />
-								</>
-							}
-						>
-							<Route path="all" element={<div>All Attempts</div>} />
-							<Route path="manual" element={<div>Manual Review</div>} />
-							<Route path="correct" element={<div>Correct Attempts</div>} />
-							<Route path="incorrect" element={<div>Incorrect Attempts</div>} />
-						</Route>
+						<Route path="attempts" element={<Attempts />} />
 						<Route path="settings" element={<div>Settings</div>} />
 					</Route>
 				</Routes>

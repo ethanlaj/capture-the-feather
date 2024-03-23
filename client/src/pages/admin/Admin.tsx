@@ -9,7 +9,7 @@ const AdminLayout = () => {
 	const adminNavLinks = {
 		"/admin/users": "Users",
 		"/admin/challenges": "Challenges",
-		"/admin/attempts/all": "Attempts",
+		"/admin/attempts": "Attempts",
 		"/admin/settings": "Settings",
 	};
 
