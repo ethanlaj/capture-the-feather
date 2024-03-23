@@ -149,7 +149,6 @@ router.put("/admin/:id",
 						}, { transaction: t });
 					} else {
 						const existingOption = challenge.shortAnswerOptions.find(o => o.id === option.id);
-						console.log(existingOption);
 						await existingOption!.update(option, { transaction: t });
 					}
 				}

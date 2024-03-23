@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect } from "react";
 import { Button, Checkbox, Form, Input, InputNumber, Radio } from "antd";
 import ReactQuill from "react-quill";
 import TextArea from "antd/es/input/TextArea";
@@ -56,7 +56,6 @@ interface CreateChallengeForm {
 }
 
 const CreateChallenge = () => {
-	const [description, setDescription] = useState("");
 	const navigate = useNavigate();
 	const [form] = useForm<CreateChallengeForm>();
 	const idStr = useParams().id;
@@ -71,7 +70,7 @@ const CreateChallenge = () => {
 			category: values.category,
 			title: values.title,
 			shortDescription: values.shortDescription,
-			description: description,
+			description: values.description,
 			type: values.challengeType,
 			pointsType: values.pointsType,
 			points: values.points,
@@ -126,6 +125,8 @@ const CreateChallenge = () => {
 			} else {
 				await ChallengeService.createChallenge(challenge);
 			}
+
+			navigate("/admin/challenges");
 		} catch (error) {
 			console.log(error);
 			new ClientError(error).toast();
@@ -218,7 +219,7 @@ const CreateChallenge = () => {
 						},
 					]}
 				>
-					<ReactQuill theme="snow" value={description} onChange={setDescription} />
+					<ReactQuill theme="snow" />
 				</Form.Item>
 
 				<FormItemWithSublabel
