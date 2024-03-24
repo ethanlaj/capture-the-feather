@@ -17,7 +17,7 @@ export class ChallengeService {
 	}
 
 	static async createChallenge(challenge: any): Promise<void> {
-		return await axios.post(url, challenge);
+		return await axios.post(adminUrl, challenge);
 	}
 
 	static async updateChallenge(id: number, challenge: any): Promise<void> {

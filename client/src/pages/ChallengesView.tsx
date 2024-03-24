@@ -148,7 +148,11 @@ function ChallengesView() {
 				onChallengeAttempted={handleChallengeUpdated}
 				handleCancel={handleCancel}
 			/>
-			{isConfettiActive && <Confetti recycle={false} width={width} height={height} />}
+			{isConfettiActive && (
+				<div className="fixed top-0 left-0 w-full h-full">
+					<Confetti recycle={false} width={width} height={height} />
+				</div>
+			)}
 		</>
 	);
 }
