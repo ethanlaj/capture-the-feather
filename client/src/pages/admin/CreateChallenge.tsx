@@ -18,6 +18,7 @@ import {
 import { ChallengeService } from "@/services/challengeService";
 import { ClientError } from "@/types/ClientError";
 import { useNavigate, useParams } from "react-router-dom";
+import ChallengeFiles from "@/components/admin/CreateChallengeForm/ChallengeFiles";
 
 interface CreateChallengeForm {
 	title: string;
@@ -53,6 +54,11 @@ interface CreateChallengeForm {
 		isRegularExpression: boolean;
 		regExp: string;
 	}[];
+	challengeFiles: {
+		fileList: {
+			originFileObj: File;
+		}[];
+	};
 }
 
 const CreateChallenge = () => {
@@ -66,6 +72,8 @@ const CreateChallenge = () => {
 	const isContainer = useWatch("isContainer", form);
 
 	const onFinish = async (values: CreateChallengeForm) => {
+		const form = new FormData();
+
 		const challenge = {
 			category: values.category,
 			title: values.title,
@@ -119,11 +127,17 @@ const CreateChallenge = () => {
 				: {}),
 		};
 
+		for (const file of values.challengeFiles.fileList) {
+			form.append("files", file.originFileObj);
+		}
+
+		form.append("challenge", JSON.stringify(challenge));
+
 		try {
 			if (id) {
 				await ChallengeService.updateChallenge(id, challenge);
 			} else {
-				await ChallengeService.createChallenge(challenge);
+				await ChallengeService.createChallenge(form);
 			}
 
 			navigate("/admin/challenges");
@@ -285,6 +299,8 @@ const CreateChallenge = () => {
 				</FormItemWithSublabel>
 
 				{isContainer ? <ContainerQs /> : null}
+
+				<ChallengeFiles />
 
 				<Form.Item>
 					<div className="flex gap-2">

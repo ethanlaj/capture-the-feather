@@ -1,12 +1,16 @@
 import { Request, Response, Router } from "express";
 import errorHandler from "../middleware/errorHandler";
-import { Challenge, Container, MultipleChoiceOption, ShortAnswerOption } from "../database/models";
+import { Challenge, ChallengeFile, Container, MultipleChoiceOption, ShortAnswerOption } from "../database/models";
 import { ChallengeService } from "../services/challengeService";
 import { verifyAccess } from "../middleware/verifyAccess";
 import { verifyIsAdmin } from "../middleware/verifyIsAdmin";
 import { KubernetesService } from "../services/kubernetesService";
 import { requireBody } from "../middleware/requireBody";
 import { ChallengeType } from "../database/models/challenge";
+import { upload } from "../middleware/multer";
+import { v4 as uuidv4 } from "uuid";
+import fs from "fs";
+import path from "path";
 
 const router = Router();
 
@@ -35,28 +39,41 @@ router.get("/admin/:id", verifyIsAdmin, errorHandler(async (req: Request, res: R
 	return res.json(challenge);
 }));
 
-const requiredFields = [
-	'title',
-	'category',
-	'shortDescription',
-	'description',
-	'maxAttempts',
-	'pointsType',
-	'challengeType',
-	'points',
-];
-
 router.post("/admin",
 	verifyIsAdmin,
-	requireBody(requiredFields),
+	upload.any(),
 	errorHandler(async (req: Request, res: Response) => {
+		const files = req.files as Express.Multer.File[];
+		console.log(req.body)
+		const newChallenge = JSON.parse(req.body.challenge);
+
 		const t = await Challenge.sequelize!.transaction();
 
 		try {
-			await Challenge.create(req.body, {
+			const challenge = await Challenge.create(newChallenge, {
 				transaction: t,
 				include: [MultipleChoiceOption, ShortAnswerOption]
 			});
+
+			if (Array.isArray(files) && files.length > 0) {
+				const filesToSave = [];
+
+				for (let file of files) {
+					const { path: currentPath, filename, mimetype } = file;
+					const newPath = `challengeFiles/${uuidv4()}-${filename}`;
+
+					filesToSave.push({
+						path: newPath,
+						mimetype,
+						filename,
+						challengeId: challenge.id
+					});
+
+					fs.renameSync(currentPath, path.join(__dirname, "..", "..", newPath));
+				}
+
+				await ChallengeFile.bulkCreate(filesToSave), { transaction: t };
+			}
 
 			await t.commit();
 
@@ -71,7 +88,6 @@ router.post("/admin",
 
 router.put("/admin/:id",
 	verifyIsAdmin,
-	requireBody(requiredFields),
 	errorHandler(async (req: Request, res: Response) => {
 		const challengeId = Number(req.params.id);
 		const challenge = await Challenge.findByPk(challengeId, {

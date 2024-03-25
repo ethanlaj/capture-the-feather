@@ -1,5 +1,5 @@
 import { Table, Column, Model, AllowNull, PrimaryKey, DataType, HasMany, AutoIncrement, Scopes, Default } from 'sequelize-typescript';
-import { MultipleChoiceOption, ShortAnswerOption, Attempt, PointLog } from '.';
+import { MultipleChoiceOption, ShortAnswerOption, Attempt, PointLog, ChallengeFile } from '.';
 
 export enum ChallengeType {
 	MultipleChoice = "multiple-choice",
@@ -149,6 +149,9 @@ class Challenge extends Model {
 
 	@HasMany(() => Attempt)
 	attempts!: Attempt[];
+
+	@HasMany(() => ChallengeFile)
+	files!: ChallengeFile[];
 }
 
 export { Challenge as _Challenge };

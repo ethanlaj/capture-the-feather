@@ -16,8 +16,12 @@ export class ChallengeService {
 		return response.data;
 	}
 
-	static async createChallenge(challenge: any): Promise<void> {
-		return await axios.post(adminUrl, challenge);
+	static async createChallenge(data: FormData): Promise<void> {
+		return await axios.post(adminUrl, data, {
+			headers: {
+				'Content-Type': 'multipart/form-data',
+			},
+		});
 	}
 
 	static async updateChallenge(id: number, challenge: any): Promise<void> {
