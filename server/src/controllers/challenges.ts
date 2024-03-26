@@ -5,7 +5,6 @@ import { ChallengeService } from "../services/challengeService";
 import { verifyAccess } from "../middleware/verifyAccess";
 import { verifyIsAdmin } from "../middleware/verifyIsAdmin";
 import { KubernetesService } from "../services/kubernetesService";
-import { requireBody } from "../middleware/requireBody";
 import { ChallengeType } from "../database/models/challenge";
 import { upload } from "../middleware/multer";
 import { v4 as uuidv4 } from "uuid";
@@ -44,7 +43,6 @@ router.post("/admin",
 	upload.any(),
 	errorHandler(async (req: Request, res: Response) => {
 		const files = req.files as Express.Multer.File[];
-		console.log(req.body)
 		const newChallenge = JSON.parse(req.body.challenge);
 
 		const t = await Challenge.sequelize!.transaction();
@@ -56,23 +54,7 @@ router.post("/admin",
 			});
 
 			if (Array.isArray(files) && files.length > 0) {
-				const filesToSave = [];
-
-				for (let file of files) {
-					const { path: currentPath, filename, mimetype } = file;
-					const newPath = `challengeFiles/${uuidv4()}-${filename}`;
-
-					filesToSave.push({
-						path: newPath,
-						mimetype,
-						filename,
-						challengeId: challenge.id
-					});
-
-					fs.renameSync(currentPath, path.join(__dirname, "..", "..", newPath));
-				}
-
-				await ChallengeFile.bulkCreate(filesToSave), { transaction: t };
+				await moveFilesAndSaveToDatabase(files, challenge.id);
 			}
 
 			await t.commit();
@@ -88,6 +70,7 @@ router.post("/admin",
 
 router.put("/admin/:id",
 	verifyIsAdmin,
+	upload.any(),
 	errorHandler(async (req: Request, res: Response) => {
 		const challengeId = Number(req.params.id);
 		const challenge = await Challenge.findByPk(challengeId, {
@@ -97,21 +80,27 @@ router.put("/admin/:id",
 			}, {
 				model: ShortAnswerOption,
 				attributes: ["id"]
+			}, {
+				model: ChallengeFile,
+				attributes: ["id", "path"]
 			}]
 		})
 		if (!challenge) {
 			return res.status(404).json({ error: "Challenge not found" });
 		}
 
+		const files = req.files as Express.Multer.File[];
+		const newChallenge = JSON.parse(req.body.challenge);
+
 		const t = await Challenge.sequelize!.transaction();
 
 		try {
-			await challenge.update(req.body, {
+			await challenge.update(newChallenge, {
 				transaction: t,
 			});
 
 			if (challenge.type === ChallengeType.MultipleChoice) {
-				const options = req.body.multipleChoiceOptions;
+				const options = newChallenge.multipleChoiceOptions;
 				const optionsToDelete = challenge.multipleChoiceOptions.filter(option => !options.some((o: any) => !o.isNew && o.id === option.id));
 				await MultipleChoiceOption.destroy({
 					where: {
@@ -140,7 +129,7 @@ router.put("/admin/:id",
 					}
 				}
 			} else if (challenge.type === ChallengeType.ShortAnswer) {
-				const options = req.body.shortAnswerOptions;
+				const options = newChallenge.shortAnswerOptions;
 				const optionsToDelete = challenge.shortAnswerOptions.filter(option => !options.some((o: any) => !o.isNew && o.id === option.id));
 				await ShortAnswerOption.destroy({
 					where: {
@@ -170,6 +159,26 @@ router.put("/admin/:id",
 				}
 			}
 
+			if (Array.isArray(files) && files.length > 0) {
+				await moveFilesAndSaveToDatabase(files, challenge.id);
+			}
+
+			if (newChallenge.filesToDelete) {
+				await ChallengeFile.destroy({
+					where: {
+						id: newChallenge.filesToDelete
+					},
+					transaction: t
+				});
+
+				for (let fileId of newChallenge.filesToDelete) {
+					const file = challenge.files.find(f => f.id === fileId);
+					if (file) {
+						fs.unlinkSync(path.join(__dirname, "..", "..", file.path));
+					}
+				}
+			}
+
 			await t.commit();
 
 			return res.sendStatus(201);
@@ -181,16 +190,57 @@ router.put("/admin/:id",
 	})
 );
 
+function moveFilesAndSaveToDatabase(files: Express.Multer.File[], challengeId: number) {
+	const filesToSave = [];
+
+	for (let file of files) {
+		const { path: currentPath, originalname, mimetype } = file;
+		const newPath = `challengeFiles/${uuidv4()}-${originalname}`;
+
+		console.log(file);
+
+		filesToSave.push({
+			path: newPath,
+			mimetype,
+			filename: originalname,
+			challengeId
+		});
+
+		fs.renameSync(currentPath, path.join(__dirname, "..", "..", newPath));
+	}
+
+	return ChallengeFile.bulkCreate(filesToSave);
+}
+
 router.delete("/:id", verifyIsAdmin, errorHandler(async (req: Request, res: Response) => {
 	const challengeId = Number(req.params.id);
 
-	const challenge = await Challenge.findByPk(challengeId);
+	const challenge = await Challenge.findByPk(challengeId, {
+		include: [{
+			model: ChallengeFile,
+			attributes: ["id", "path"]
+		}]
+	});
 	if (!challenge) {
 		return res.status(404).json({ error: "Challenge not found" });
 	}
 
+	const t = await Challenge.sequelize!.transaction();
+
 	try {
-		await challenge.destroy();
+		await challenge.destroy({ transaction: t });
+
+		await ChallengeFile.destroy({
+			where: {
+				challengeId: challengeId
+			},
+			transaction: t
+		});
+
+		for (let file of challenge.files) {
+			fs.unlinkSync(path.join(__dirname, "..", "..", file.path));
+		}
+
 		return res.sendStatus(200);
 	} catch (error) {
 		console.error(error);

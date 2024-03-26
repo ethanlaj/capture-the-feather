@@ -10,8 +10,20 @@ const ChallengeFiles = () => {
 		},
 	};
 
+	const normFile = (e: any) => {
+		if (Array.isArray(e)) {
+			return e;
+		}
+		return e?.fileList;
+	};
+
 	return (
-		<FormItem name="challengeFiles" label="Challenge Files">
+		<FormItem
+			name="newFiles"
+			label="Challenge Files"
+			valuePropName="fileList"
+			getValueFromEvent={normFile}
+		>
 			<Dragger {...props} style={{ backgroundColor: "white" }}>
 				<p className="ant-upload-drag-icon">
 					<InboxOutlined />

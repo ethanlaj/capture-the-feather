@@ -149,7 +149,7 @@ function ChallengesView() {
 				handleCancel={handleCancel}
 			/>
 			{isConfettiActive && (
-				<div className="fixed top-0 left-0 w-full h-full">
+				<div className="confetti fixed top-0 left-0">
 					<Confetti recycle={false} width={width} height={height} />
 				</div>
 			)}

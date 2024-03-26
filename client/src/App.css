@@ -39,3 +39,12 @@ body {
 .ql-toolbar.ql-snow {
 	background-color: white;
 }
+
+.marked-for-deletion {
+	background-color: #ff9599;
+}
+
+.marked-for-deletion:hover td {
+	background-color: #ff9599 !important;
+}
+  

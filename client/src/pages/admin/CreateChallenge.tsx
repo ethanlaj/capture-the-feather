@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Button, Checkbox, Form, Input, InputNumber, Radio } from "antd";
 import ReactQuill from "react-quill";
 import TextArea from "antd/es/input/TextArea";
@@ -19,51 +19,16 @@ import { ChallengeService } from "@/services/challengeService";
 import { ClientError } from "@/types/ClientError";
 import { useNavigate, useParams } from "react-router-dom";
 import ChallengeFiles from "@/components/admin/CreateChallengeForm/ChallengeFiles";
-
-interface CreateChallengeForm {
-	title: string;
-	category: string;
-	shortDescription: string;
-	description: string;
-	pointsType: PointsType;
-	points: number;
-	maxAttempts: number;
-	minPoints: number;
-	decay: number;
-	isContainer: boolean;
-	containerImage: string;
-	containerPorts: {
-		key: number;
-		name: number;
-		port: number;
-	}[];
-	containerInstructions: string;
-	challengeType: ChallengeType;
-	multipleChoiceOptions: {
-		key: number;
-		name: number;
-		option: string;
-		isCorrect: boolean;
-	}[];
-	shortAnswerOptions: {
-		key: number;
-		name: number;
-		option: string;
-		isCorrect: boolean;
-		isCaseSensitive: boolean;
-		isRegularExpression: boolean;
-		regExp: string;
-	}[];
-	challengeFiles: {
-		fileList: {
-			originFileObj: File;
-		}[];
-	};
-}
+import ExistingFiles from "@/components/admin/CreateChallengeForm/ExistingFiles";
+import { CreateChallengeForm } from "@/types/CreateChallenge";
+import { ChallengeFile } from "@/types/ChallengeFile";
 
 const CreateChallenge = () => {
 	const navigate = useNavigate();
 	const [form] = useForm<CreateChallengeForm>();
+	const [existingFiles, setExistingFiles] = useState<ChallengeFile[]>([]);
+	const [filesToDelete, setFilesToDelete] = useState<number[]>([]);
+
 	const idStr = useParams().id;
 	const id = idStr ? parseInt(idStr) : null;
 
@@ -125,17 +90,18 @@ const CreateChallenge = () => {
 						}),
 				  }
 				: {}),
+			filesToDelete,
 		};
 
-		for (const file of values.challengeFiles.fileList) {
-			form.append("files", file.originFileObj);
+		for (const file of values.newFiles || []) {
+			form.append("files", file.originFileObj, file.name);
 		}
 
 		form.append("challenge", JSON.stringify(challenge));
 
 		try {
 			if (id) {
-				await ChallengeService.updateChallenge(id, challenge);
+				await ChallengeService.updateChallenge(id, form);
 			} else {
 				await ChallengeService.createChallenge(form);
 			}
@@ -157,6 +123,8 @@ const CreateChallenge = () => {
 			} else if (result.type === ChallengeType.ShortAnswer) {
 				delete (result as any).multipleChoiceOptions;
 			}
+
+			setExistingFiles(result.files);
 
 			form.setFieldsValue({
 				...result,
@@ -301,6 +269,15 @@ const CreateChallenge = () => {
 				{isContainer ? <ContainerQs /> : null}
 
 				<ChallengeFiles />
+				{id && existingFiles.length > 0 && (
+					<div className="mb-6">
+						<ExistingFiles
+							existingFiles={existingFiles}
+							filesToDelete={filesToDelete}
+							setFilesToDelete={setFilesToDelete}
+						/>
+					</div>
+				)}
 
 				<Form.Item>
 					<div className="flex gap-2">

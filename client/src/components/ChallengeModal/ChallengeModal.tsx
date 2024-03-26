@@ -40,6 +40,8 @@ const ChallengeModal = ({
 
 	const handleSubmit = async () => {
 		try {
+			if (!challenge || !userAnswer) return;
+
 			const submitResponse = await AttemptService.submitAttempt(challenge!.id, userAnswer);
 			setUserAnswer(undefined);
 			const isSolved = onChallengeAttempted(submitResponse);

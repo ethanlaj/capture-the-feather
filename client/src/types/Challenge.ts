@@ -1,4 +1,5 @@
 import { Attempt } from "./Attempt";
+import { ChallengeFile } from "./ChallengeFile";
 
 export type Challenge = MultipleChoiceChallenge | ShortAnswerChallenge;
 
@@ -34,6 +35,7 @@ interface BaseChallenge {
 	isSolved: boolean;
 	isExhausted: boolean;
 	isSolvedOrExhausted: boolean;
+	files: ChallengeFile[];
 }
 
 export interface MultipleChoiceOption {

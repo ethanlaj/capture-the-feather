@@ -24,8 +24,12 @@ export class ChallengeService {
 		});
 	}
 
-	static async updateChallenge(id: number, challenge: any): Promise<void> {
-		return await axios.put(`${adminUrl}/${id}`, challenge);
+	static async updateChallenge(id: number, data: FormData): Promise<void> {
+		return await axios.put(`${adminUrl}/${id}`, data, {
+			headers: {
+				'Content-Type': 'multipart/form-data',
+			},
+		});
 	}
 
 	static async deleteChallenge(id: number): Promise<void> {

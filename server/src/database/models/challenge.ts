@@ -25,6 +25,7 @@ export enum PointsType {
 				separate: true,
 			},
 			ShortAnswerOption,
+			ChallengeFile
 		]
 	}),
 	withoutUserAttempts: () => ({
@@ -35,6 +36,7 @@ export enum PointsType {
 				separate: true,
 			},
 			ShortAnswerOption,
+			ChallengeFile
 		]
 	})
 }))
