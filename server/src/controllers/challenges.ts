@@ -1,4 +1,5 @@
 import { Request, Response, Router } from "express";
+import { Transaction } from "sequelize";
 import errorHandler from "../middleware/errorHandler";
 import { Challenge, ChallengeFile, Container, MultipleChoiceOption, ShortAnswerOption } from "../database/models";
 import { ChallengeService } from "../services/challengeService";
@@ -54,7 +55,7 @@ router.post("/admin",
 			});
 
 			if (Array.isArray(files) && files.length > 0) {
-				await moveFilesAndSaveToDatabase(files, challenge.id);
+				await moveFilesAndSaveToDatabase(files, challenge.id, t);
 			}
 
 			await t.commit();
@@ -160,7 +161,7 @@ router.put("/admin/:id",
 			}
 
 			if (Array.isArray(files) && files.length > 0) {
-				await moveFilesAndSaveToDatabase(files, challenge.id);
+				await moveFilesAndSaveToDatabase(files, challenge.id, t);
 			}
 
 			if (newChallenge.filesToDelete) {
@@ -190,7 +191,7 @@ router.put("/admin/:id",
 	})
 );
 
-function moveFilesAndSaveToDatabase(files: Express.Multer.File[], challengeId: number) {
+function moveFilesAndSaveToDatabase(files: Express.Multer.File[], challengeId: number, t: Transaction) {
 	const filesToSave = [];
 
 	for (let file of files) {
@@ -209,7 +210,7 @@ function moveFilesAndSaveToDatabase(files: Express.Multer.File[], challengeId: n
 		fs.renameSync(currentPath, path.join(__dirname, "..", "..", newPath));
 	}
 
-	return ChallengeFile.bulkCreate(filesToSave);
+	return ChallengeFile.bulkCreate(filesToSave, { transaction: t });
 }
 
 router.delete("/:id", verifyIsAdmin, errorHandler(async (req: Request, res: Response) => {

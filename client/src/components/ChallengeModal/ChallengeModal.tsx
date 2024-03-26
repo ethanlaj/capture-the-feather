@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import ShortAnswer from "./ShortAnswer";
 import { AttemptService, SubmitAttemptResponse } from "@/services/attemptService";
 import { ClientError } from "@/types/ClientError";
+import ChallengeFiles from "./ChallengeFiles";
 
 interface Props {
 	challenge?: Challenge;
@@ -79,6 +80,8 @@ const ChallengeModal = ({
 				<div
 					dangerouslySetInnerHTML={{ __html: convertTextToHtml(challenge.description) }}
 				/>
+
+				{challenge.files.length > 0 && <ChallengeFiles files={challenge.files} />}
 
 				<Divider className="m-1" />
 				{showIncorrectAnswerAlert && (
