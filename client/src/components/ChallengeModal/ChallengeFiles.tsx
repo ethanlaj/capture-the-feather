@@ -1,13 +1,19 @@
 import { ChallengeFile } from "@/types/ChallengeFile";
+import { downloadFile } from "@/util/downloadFile";
 import { DownloadOutlined } from "@ant-design/icons";
 import { Button, Table } from "antd";
+import { useState } from "react";
 
 interface Props {
 	files: ChallengeFile[];
 }
 const ChallengeFiles = ({ files }: Props) => {
-	const downloadFile = (file: ChallengeFile) => {
-		console.log(file);
+	const [currentFileDownloading, setCurrentFileDownloading] = useState<number | null>(null);
+
+	const handleDownloadClick = async (file: ChallengeFile) => {
+		setCurrentFileDownloading(file.id);
+		await downloadFile(file.id, file.filename);
+		setCurrentFileDownloading(null);
 	};
 
 	const columns = [
@@ -19,7 +25,8 @@ const ChallengeFiles = ({ files }: Props) => {
 			key: "action",
 			render: (file: ChallengeFile) => (
 				<Button
-					onClick={() => downloadFile(file)}
+					onClick={() => handleDownloadClick(file)}
+					loading={currentFileDownloading === file.id}
 					type="primary"
 					icon={<DownloadOutlined />}
 				>

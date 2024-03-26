@@ -35,4 +35,10 @@ export class ChallengeService {
 	static async deleteChallenge(id: number): Promise<void> {
 		return await axios.delete(`${adminUrl}/${id}`);
 	}
+
+	static async downloadChallengeFile(fileId: number) {
+		return await axios.get(`${url}/file/${fileId}`, {
+			responseType: 'blob',
+		});
+	}
 }

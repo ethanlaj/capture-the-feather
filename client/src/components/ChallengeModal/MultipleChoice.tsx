@@ -22,8 +22,7 @@ const MultipleChoice = ({ options, attempts, userAnswer, handleUserAnswerChange 
 				{options.map((option) => {
 					const isIncorrect = attempts.find(
 						(attempt) =>
-							parseInt(attempt.multipleChoiceOptionId) === option.id &&
-							!attempt.isCorrect
+							attempt.multipleChoiceOptionId === option.id && !attempt.isCorrect
 					);
 
 					return (

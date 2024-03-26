@@ -1,6 +1,8 @@
 import { Button } from "antd";
 import { DownloadOutlined, DeleteOutlined, UndoOutlined } from "@ant-design/icons";
 import { ChallengeFile } from "@/types/ChallengeFile";
+import { downloadFile } from "@/util/downloadFile";
+import { useState } from "react";
 
 interface Props {
 	file: ChallengeFile;
@@ -15,13 +17,21 @@ const ChallengeFileActions = ({
 	handleDelete,
 	handleUnmarkForDeletion,
 }: Props) => {
-	const downloadFile = () => {
-		console.log("Download file");
+	const [isDownloading, setIsDownloading] = useState<boolean>(false);
+
+	const handleDownloadClick = async () => {
+		setIsDownloading(true);
+		await downloadFile(file.id, file.filename);
+		setIsDownloading(false);
 	};
 
 	return (
 		<div className="flex justify-center gap-1">
-			<Button onClick={downloadFile} icon={<DownloadOutlined />} />
+			<Button
+				onClick={() => handleDownloadClick()}
+				loading={isDownloading}
+				icon={<DownloadOutlined />}
+			/>
 			<Button
 				danger={!isMarkedForDeletion}
 				icon={isMarkedForDeletion ? <UndoOutlined /> : <DeleteOutlined />}

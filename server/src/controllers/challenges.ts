@@ -39,6 +39,18 @@ router.get("/admin/:id", verifyIsAdmin, errorHandler(async (req: Request, res: R
 	return res.json(challenge);
 }));
 
+router.get("/file/:id", errorHandler(async (req: Request, res: Response) => {
+	const fileId = Number(req.params.id);
+
+	const file = await ChallengeFile.findByPk(fileId);
+	if (!file) {
+		return res.status(404).json({ error: "File not found" });
+	}
+
+	const filePath = path.join(__dirname, "..", "..", file.path);
+	res.download(filePath, file.filename);
+}));
+
 router.post("/admin",
 	verifyIsAdmin,
 	upload.any(),
