@@ -50,7 +50,6 @@ export interface ShortAnswerOption {
 	isCorrect?: boolean;
 	isCaseSensitive: boolean;
 	matchMode?: ShortAnswerMatchMode;
-	regExp?: string;
 }
 
 export enum ShortAnswerMatchMode {

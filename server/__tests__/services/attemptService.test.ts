@@ -12,7 +12,7 @@ const multipleChoiceChallenge = {
 const shortAnswerChallengeRegex = {
 	type: 'short-answer',
 	shortAnswerOptions: [
-		{ matchMode: 'regex', regExp: '^test$' }
+		{ matchMode: 'regex', value: '^test$' }
 	],
 } as Challenge;
 

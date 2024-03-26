@@ -17,13 +17,9 @@ class ShortAnswerOption extends Model {
 	@Column(DataType.ENUM('static', 'regex'))
 	matchMode!: 'static' | 'regex';
 
-	@AllowNull(true)
+	@AllowNull(false)
 	@Column(DataType.STRING)
 	value!: string;
-
-	@AllowNull(true)
-	@Column(DataType.STRING)
-	regExp!: string;
 
 	@AllowNull(false)
 	@Column(DataType.BOOLEAN)

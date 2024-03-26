@@ -23,7 +23,7 @@ export class AttemptService {
 			if (correctAnswer.matchMode === 'regex') {
 				const flags = correctAnswer.isCaseSensitive ? '' : 'i';
 
-				const regExp = new RegExp(correctAnswer.regExp!, flags);
+				const regExp = new RegExp(correctAnswer.value, flags);
 				if (regExp.test(userAnswer)) {
 					return true;
 				}

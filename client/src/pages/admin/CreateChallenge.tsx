@@ -67,7 +67,6 @@ const CreateChallenge = () => {
 				? {
 						multipleChoiceOptions: values.multipleChoiceOptions.map((option: any) => {
 							return {
-								id: option.key,
 								value: option.option,
 								isCorrect: option.isCorrect,
 								isNew: option.isNew,
@@ -79,12 +78,10 @@ const CreateChallenge = () => {
 				? {
 						shortAnswerOptions: values.shortAnswerOptions.map((option: any) => {
 							return {
-								id: option.key,
 								value: option.option,
 								isCorrect: option.isCorrect,
 								isCaseSensitive: option.isCaseSensitive,
 								matchMode: option.isRegularExpression ? "regex" : "static",
-								regExp: option.regExp,
 								isNew: option.isNew,
 							};
 						}),
