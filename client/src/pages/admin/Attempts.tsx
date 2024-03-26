@@ -27,6 +27,12 @@ const Attempts = () => {
 			key: "userName",
 		},
 		{
+			title: "Challenge",
+			sorter: (a, b) => a.challenge.title.localeCompare(b.challenge.title),
+			render: (attempt) => attempt.challenge.title,
+			key: "challenge",
+		},
+		{
 			title: "Category",
 			sorter: (a, b) => a.challenge.category.localeCompare(b.challenge.category),
 			render: (attempt) => attempt.challenge.category,
@@ -76,7 +82,16 @@ const Attempts = () => {
 		},
 	];
 
-	return <Table pagination={false} dataSource={attempts} columns={columns} rowKey="id" />;
+	return (
+		<Table
+			title={() => <h1 className="text-center">Attempts</h1>}
+			bordered
+			pagination={false}
+			dataSource={attempts}
+			columns={columns}
+			rowKey="id"
+		/>
+	);
 };
 
 export default Attempts;

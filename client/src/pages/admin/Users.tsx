@@ -40,7 +40,16 @@ const Users = () => {
 		},
 	];
 
-	return <Table pagination={false} dataSource={users} columns={columns} rowKey="id" />;
+	return (
+		<Table
+			title={() => <h1 className="text-center">Users</h1>}
+			bordered
+			pagination={false}
+			dataSource={users}
+			columns={columns}
+			rowKey="id"
+		/>
+	);
 };
 
 export default Users;

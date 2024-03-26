@@ -72,15 +72,25 @@ const Challenges = () => {
 
 	return (
 		<>
-			<Button
-				type="primary"
-				icon={<PlusOutlined />}
-				className="mb-4"
-				onClick={() => handleCreateChallenge()}
-			>
-				Create
-			</Button>
-			<Table pagination={false} dataSource={challenges} columns={columns} rowKey="id" />
+			<Table
+				title={() => (
+					<div className="flex items-center justify-center gap-3">
+						<Button
+							type="primary"
+							icon={<PlusOutlined />}
+							onClick={() => handleCreateChallenge()}
+						>
+							Create
+						</Button>
+						<h1 className="text-center">Challenges</h1>
+					</div>
+				)}
+				bordered
+				pagination={false}
+				dataSource={challenges}
+				columns={columns}
+				rowKey="id"
+			/>
 		</>
 	);
 };
