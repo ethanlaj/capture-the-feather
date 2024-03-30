@@ -17,6 +17,7 @@ import Challenges from "./pages/admin/Challenges";
 import Users from "./pages/admin/Users";
 import CreateChallenge from "./pages/admin/CreateChallenge";
 import Attempts from "./pages/admin/Attempts";
+import Containers from "./pages/admin/Containers";
 
 const { Content } = Layout;
 
@@ -54,6 +55,7 @@ const App = () => {
 						<Route path="challenges/edit/:id" element={<CreateChallenge />} />
 						<Route path="attempts" element={<Attempts />} />
 						<Route path="settings" element={<div>Settings</div>} />
+						<Route path="containers" element={<Containers />} />
 					</Route>
 				</Routes>
 			</Content>

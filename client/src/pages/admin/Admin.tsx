@@ -11,6 +11,7 @@ const AdminLayout = () => {
 		"/admin/challenges": "Challenges",
 		"/admin/attempts": "Attempts",
 		"/admin/settings": "Settings",
+		"/admin/containers": "Containers",
 	};
 
 	return (

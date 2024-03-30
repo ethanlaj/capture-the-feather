@@ -1,6 +1,7 @@
 import { Challenge } from '@/types/Challenge';
 import axios from 'axios';
 import { baseUrl } from '.';
+import { UserContainer, UserContainerWithK8Data } from '@/types/UserContainer';
 
 const url = baseUrl + '/challenges';
 const adminUrl = url + '/admin';
@@ -40,5 +41,39 @@ export class ChallengeService {
 		return await axios.get(`${url}/file/${fileId}`, {
 			responseType: 'blob',
 		});
+	}
+
+	// Admin route
+	static async getChallengeContainers() {
+		const response = await axios.get<UserContainerWithK8Data[]>(`${url}/containers`);
+		return response.data;
+	}
+
+	static async getChallengeContainer(id: number) {
+		const response = await axios.get<UserContainer | null>(`${url}/${id}/container`);
+		return response.data;
+	}
+
+	static async startChallengeContainer(id: number) {
+		const response = await axios.post<UserContainer>(`${url}/${id}/container`);
+		return response.data;
+	}
+
+	static async stopChallengeContainer(id: number) {
+		return await axios.delete(`${url}/${id}/container`);
+	}
+
+	static formatContainerAccessInstructions(instructions: string, container: UserContainer) {
+		const address = "http://localhost"
+
+		for (const port of container.ports) {
+			const addrPortRegex = new RegExp(`\\{addr:port:${port.port}\\}`, 'g');
+			instructions = instructions.replace(addrPortRegex, `${address}:${port.nodePort}`);
+
+			const portRegex = new RegExp(`\\{port:${port.port}\\}`, 'g');
+			instructions = instructions.replace(portRegex, `${port.nodePort}`);
+		}
+
+		return instructions;
 	}
 }

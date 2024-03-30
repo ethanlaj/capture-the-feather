@@ -36,6 +36,10 @@ interface BaseChallenge {
 	isExhausted: boolean;
 	isSolvedOrExhausted: boolean;
 	files: ChallengeFile[];
+	isContainer: boolean;
+	containerPorts: number[];
+	containerInstructions: string;
+	containerImage: string;
 }
 
 export interface MultipleChoiceOption {

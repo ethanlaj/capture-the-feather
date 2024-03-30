@@ -1,7 +1,7 @@
 import { Request, Response, Router } from "express";
 import { Transaction } from "sequelize";
 import errorHandler from "../middleware/errorHandler";
-import { Challenge, ChallengeFile, Container, MultipleChoiceOption, ShortAnswerOption } from "../database/models";
+import { Challenge, ChallengeFile, Container, MultipleChoiceOption, ShortAnswerOption, User } from "../database/models";
 import { ChallengeService } from "../services/challengeService";
 import { verifyAccess } from "../middleware/verifyAccess";
 import { verifyIsAdmin } from "../middleware/verifyIsAdmin";
@@ -261,6 +261,54 @@ router.delete("/:id", verifyIsAdmin, errorHandler(async (req: Request, res: Resp
 	}
 }));
 
+router.get("/containers", verifyIsAdmin, errorHandler(async (req: Request, res: Response) => {
+	const containers = await Container.findAll({
+		include: [
+			{
+				model: Challenge,
+			},
+			{
+				model: User,
+				attributes: ["name", "email"]
+			}
+		]
+	});
+
+	const allDeployments = await KubernetesService.getAllDeployments();
+
+	const containersToReturn = [];
+	for (let container of containers) {
+		const deployment = allDeployments.find(d => d.metadata?.labels?.challengeId === container.challengeId.toString() && d.metadata.labels?.userId === container.userId.toString());
+
+		const isDeploymentReady = deployment?.status?.readyReplicas === deployment?.status?.replicas;
+
+		containersToReturn.push({
+			...container.toJSON(),
+			isDeploymentReady,
+		});
+	}
+
+	return res.json(containersToReturn);
+}))
+
+router.get("/:id/container", verifyAccess, errorHandler(async (req: Request, res: Response) => {
+	const challengeId = Number(req.params.id);
+	const userId = req.payload!.userId;
+
+	const container = await Container.findOne({
+		where: {
+			challengeId,
+			userId
+		}
+	});
+
+	if (!container) {
+		return res.json(null);
+	}
+
+	return res.json(container);
+}));
+
 router.post("/:id/container", verifyAccess, errorHandler(async (req: Request, res: Response) => {
 	const challengeId = Number(req.params.id);
 	const userId = req.payload!.userId;
@@ -288,7 +336,7 @@ router.post("/:id/container", verifyAccess, errorHandler(async (req: Request, re
 	});
 
 	if (container) {
-		return res.status(400).json({ error: "Container already exists for this user" });
+		// return res.status(400).json({ error: "Container already exists for this user" });
 	}
 
 	try {
@@ -335,12 +383,16 @@ router.delete("/:id/container", verifyAccess, errorHandler(async (req: Request, 
 		return res.status(400).json({ error: "Container is already being deleted" });
 	}
 
+	const t = await Container.sequelize!.transaction();
 	try {
-		await container.update({ isDeleting: true });
+		await container.update({ isDeleting: true }, { transaction: t });
 		await KubernetesService.deleteDeployment(challengeId, userId);
-		await container.destroy();
+		await container.destroy({ transaction: t });
+
+		await t.commit();
 		return res.sendStatus(200);
 	} catch (error) {
+		await t.rollback();
 		console.error(error);
 		return res.status(500).json({ error: "Failed to delete container" });
 	}

@@ -35,6 +35,16 @@ const ContainerQs = () => {
 												required: true,
 												message: "'port' is required",
 											},
+											{
+												type: "number",
+												min: 1,
+												message: "'port' cannot be smaller than 1",
+											},
+											{
+												type: "number",
+												max: 65535,
+												message: "'port' cannot be larger than 65535",
+											},
 										]}
 									>
 										<InputNumber

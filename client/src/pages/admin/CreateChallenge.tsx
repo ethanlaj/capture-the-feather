@@ -67,6 +67,7 @@ const CreateChallenge = () => {
 				? {
 						multipleChoiceOptions: values.multipleChoiceOptions.map((option: any) => {
 							return {
+								id: !option.isNew ? option.key : undefined,
 								value: option.option,
 								isCorrect: option.isCorrect,
 								isNew: option.isNew,
@@ -78,6 +79,7 @@ const CreateChallenge = () => {
 				? {
 						shortAnswerOptions: values.shortAnswerOptions.map((option: any) => {
 							return {
+								id: !option.isNew ? option.key : undefined,
 								value: option.option,
 								isCorrect: option.isCorrect,
 								isCaseSensitive: option.isCaseSensitive,
@@ -137,6 +139,11 @@ const CreateChallenge = () => {
 						};
 					}
 				),
+				containerPorts: result.containerPorts?.map((port, index) => ({
+					key: index,
+					name: index,
+					port: port,
+				})),
 				multipleChoiceOptions: (
 					result as MultipleChoiceChallenge
 				).multipleChoiceOptions?.map((option) => {

@@ -82,7 +82,7 @@ function ChallengesView() {
 		setCategories(updatedCategories);
 
 		setSelectedChallenge(challenge);
-		if (challenge.isSolvedOrExhausted) {
+		if (challenge.isSolved) {
 			setIsModalOpen(false);
 		}
 

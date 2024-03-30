@@ -11,6 +11,8 @@ import ShortAnswer from "./ShortAnswer";
 import { AttemptService, SubmitAttemptResponse } from "@/services/attemptService";
 import { ClientError } from "@/types/ClientError";
 import ChallengeFiles from "./ChallengeFiles";
+import Header from "./Header";
+import UserContainer from "./UserContainer";
 
 interface Props {
 	challenge?: Challenge;
@@ -69,7 +71,7 @@ const ChallengeModal = ({
 			onOk={handleSubmit}
 			okText="Submit"
 			onCancel={onClose}
-			width="90%"
+			width="70%"
 		>
 			<div className="flex flex-col gap-4">
 				<div className="flex justify-between">
@@ -78,10 +80,18 @@ const ChallengeModal = ({
 				</div>
 
 				<div
+					className="bg-gray-50 p-4 rounded-md border-gray-200 border-solid"
 					dangerouslySetInnerHTML={{ __html: convertTextToHtml(challenge.description) }}
 				/>
 
 				{challenge.files.length > 0 && <ChallengeFiles files={challenge.files} />}
+
+				{challenge.isContainer && (
+					<div>
+						<Header>Container</Header>
+						<UserContainer challenge={challenge} />
+					</div>
+				)}
 
 				<Divider className="m-1" />
 				{showIncorrectAnswerAlert && (

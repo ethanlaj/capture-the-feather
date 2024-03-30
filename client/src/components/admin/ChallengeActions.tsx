@@ -1,4 +1,4 @@
-import { Button, Modal } from "antd";
+import { Button, Modal, Tooltip } from "antd";
 import { EditOutlined, DeleteOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
 import { Challenge } from "@/types/Challenge";
 import { useNavigate } from "react-router-dom";
@@ -33,11 +33,15 @@ const ChallengeActions = ({ challenge, handleDelete }: Props) => {
 
 	return (
 		<div className="flex justify-center gap-1">
-			<Button
-				onClick={() => navigate(`/admin/challenges/edit/${challenge.id}`)}
-				icon={<EditOutlined />}
-			/>
-			<Button danger icon={<DeleteOutlined />} onClick={showDeleteConfirm} />
+			<Tooltip title="Edit Challenge">
+				<Button
+					onClick={() => navigate(`/admin/challenges/edit/${challenge.id}`)}
+					icon={<EditOutlined />}
+				/>
+			</Tooltip>
+			<Tooltip title="Delete Challenge">
+				<Button danger icon={<DeleteOutlined />} onClick={showDeleteConfirm} />
+			</Tooltip>
 		</div>
 	);
 };

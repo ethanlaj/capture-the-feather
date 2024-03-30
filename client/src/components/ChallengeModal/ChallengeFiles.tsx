@@ -3,6 +3,7 @@ import { downloadFile } from "@/util/downloadFile";
 import { DownloadOutlined } from "@ant-design/icons";
 import { Button, Table } from "antd";
 import { useState } from "react";
+import Header from "./Header";
 
 interface Props {
 	files: ChallengeFile[];
@@ -37,14 +38,16 @@ const ChallengeFiles = ({ files }: Props) => {
 	];
 
 	return (
-		<Table
-			rowKey={(record) => record.id}
-			pagination={false}
-			showHeader={false}
-			dataSource={files}
-			title={() => <div className="font-bold text-center">Challenge Files</div>}
-			columns={columns}
-		/>
+		<div>
+			<Header>Files</Header>
+			<Table
+				rowKey={(record) => record.id}
+				pagination={false}
+				showHeader={false}
+				dataSource={files}
+				columns={columns}
+			/>
+		</div>
 	);
 };
 
