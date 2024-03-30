@@ -336,7 +336,7 @@ router.post("/:id/container", verifyAccess, errorHandler(async (req: Request, re
 	});
 
 	if (container) {
-		// return res.status(400).json({ error: "Container already exists for this user" });
+		return res.status(400).json({ error: "Container already exists for this user" });
 	}
 
 	try {
