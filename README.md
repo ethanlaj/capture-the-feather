@@ -20,6 +20,9 @@ For Milestone 2, the plan is to finish the basic functionality of the platform f
 
 -   [3/10/24] - Basic Admin view has been created. Admins can view challenges and users. The UI for creating challenges has been started.
 -   [3/17/24] - Kubernetes API endpoints have been added to the project so users can deploy challenge containers for themselves.
+-   [3/25/24] - Admins can now create challenges, edit challenges, and delete challenges. They can also view all attempts and filter/sort through them.
 
 **Milestone 3 - Due Apr 15 by 12:59am**
 For Milestone 3, the plan is to create an event/challenge exporter and uploader. This will only include the format created by our platform. If time permits, I may begin to look into how to create a challenge importer for other platforms.
+
+-   [3/29/24] - The UI for starting and stopping containers has been created on the user side. Admins can view all containers and the status of them on the admin/containers view.
