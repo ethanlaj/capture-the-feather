@@ -2,7 +2,8 @@ import request from 'supertest';
 import app from '../../src/app';
 import bcrypt from 'bcrypt';
 import { verifyAccess } from '../../src/middleware/verifyAccess';
-import { User } from '../../src/database/models';
+import { RefreshToken, User } from '../../src/database/models';
+import jsonwebtoken from 'jsonwebtoken';
 
 // Mock the verifyAccess middleware
 jest.mock('../../src/middleware/verifyAccess', () => ({
@@ -10,6 +11,11 @@ jest.mock('../../src/middleware/verifyAccess', () => ({
 		req.payload = { userId: 1 };
 		next();
 	}),
+}));
+
+jest.mock('jsonwebtoken', () => ({
+	...jest.requireActual('jsonwebtoken'),
+	verify: jest.fn(),
 }));
 
 // Mock the DB model calls
@@ -21,7 +27,8 @@ jest.mock('../../src/database/models', () => {
 			create: jest.fn().mockResolvedValue({ id: 1, isAdmin: false }),
 		},
 		RefreshToken: {
-			create: jest.fn().mockResolvedValue({ id: 1 }),
+			findByPk: jest.fn(),
+			create: jest.fn().mockResolvedValue({ id: 1 })
 		},
 	}
 });
@@ -145,5 +152,65 @@ describe('POST /me/login', () => {
 		expect(response.status).toBe(200);
 		expect(JSON.parse(response.text)).toHaveProperty('accessToken');
 		expect(JSON.parse(response.text)).toHaveProperty('refreshToken');
+	});
+});
+
+describe('POST /me/refresh', () => {
+	it('should return 403 when no refresh token is provided', async () => {
+		const response = await request(app).post('/me/refresh');
+
+		expect(response.status).toBe(403);
+		expect(response.text).toBe("Invalid refresh token");
+	});
+
+	it('should return 403 when refresh token is invalid', async () => {
+		jest.mocked(jsonwebtoken.verify).mockImplementation(() => {
+			throw new Error('Invalid token');
+		});
+
+		const response = await request(app).post('/me/refresh')
+			.send({ token: 'invalidToken' });
+
+		expect(response.status).toBe(403);
+		expect(response.text).toBe("Invalid refresh token");
+	});
+
+	it('should return 403 when refresh token is not in DB', async () => {
+		jest.mocked(jsonwebtoken.verify).mockImplementation(() => ({
+			id: 1,
+			userId: 1,
+			isAdmin: false
+		}));
+
+		jest.mocked(RefreshToken.findByPk).mockResolvedValue(null);
+
+		const response = await request(app).post('/me/refresh')
+			.send({ token: 'validTokenNotInDB' });
+
+		expect(response.status).toBe(403);
+		expect(response.text).toBe("Invalid refresh token");
+	});
+
+	it('should return 200 and new tokens when refresh token is valid', async () => {
+		// Mock the verification process to simulate a valid token
+		jest.mocked(jsonwebtoken.verify).mockImplementation(() => ({
+			id: 1,
+			userId: 1,
+			isAdmin: false
+		}));
+
+		const mockDestroyFn = jest.fn();
+		jest.mocked(RefreshToken.findByPk).mockResolvedValue({
+			id: 1,
+			destroy: mockDestroyFn,
+		} as unknown as RefreshToken);
+
+		const response = await request(app).post('/me/refresh')
+			.send({ token: 'validToken' });
+
+		expect(response.status).toBe(200);
+		expect(mockDestroyFn).toHaveBeenCalled();
+		expect(response.body).toHaveProperty('accessToken');
+		expect(response.body).toHaveProperty('refreshToken');
 	});
 });
