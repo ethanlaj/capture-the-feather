@@ -39,7 +39,7 @@ router.get("/admin/:id", verifyIsAdmin, errorHandler(async (req: Request, res: R
 	return res.json(challenge);
 }));
 
-router.get("/file/:id", errorHandler(async (req: Request, res: Response) => {
+router.get("/file/:id", verifyAccess, errorHandler(async (req: Request, res: Response) => {
 	const fileId = Number(req.params.id);
 
 	const file = await ChallengeFile.findByPk(fileId);
@@ -48,7 +48,7 @@ router.get("/file/:id", errorHandler(async (req: Request, res: Response) => {
 	}
 
 	const filePath = path.join(__dirname, "..", "..", file.path);
-	res.download(filePath, file.filename);
+	res.status(200).download(filePath, file.filename);
 }));
 
 router.post("/admin",

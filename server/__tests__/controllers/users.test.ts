@@ -25,7 +25,7 @@ beforeEach(async () => {
 });
 
 describe('GET /users', () => {
-	it('should require access token', async () => {
+	it('should require admin token', async () => {
 		const response = await request(app).get('/users');
 
 		expect(verifyIsAdmin).toHaveBeenCalled();
