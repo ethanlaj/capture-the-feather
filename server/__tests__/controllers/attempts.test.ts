@@ -20,7 +20,7 @@ jest.mock('../../src/middleware/verifyAccess', () => ({
 jest.mock('../../src/services/attemptService', () => ({
 	AttemptService: {
 		checkIsCorrect: jest.fn(),
-		canMakeAttempts: jest.fn().mockResolvedValue(true),
+		canMakeAttempts: jest.fn(),
 	},
 }))
 
@@ -70,6 +70,9 @@ beforeEach(async () => {
 
 describe('POST /attempts/:challengeId', () => {
 	it('should require access token', async () => {
+		jest.mocked(AttemptService.canMakeAttempts).mockResolvedValue(true);
+		jest.mocked(AttemptService.checkIsCorrect).mockResolvedValue(true);
+
 		const response = await request(app).post('/attempts/1');
 
 		expect(verifyAccess).toHaveBeenCalled();
@@ -84,6 +87,7 @@ describe('POST /attempts/:challengeId', () => {
 		} as Challenge);
 
 		jest.mocked(AttemptService.checkIsCorrect).mockResolvedValue(true);
+		jest.mocked(AttemptService.canMakeAttempts).mockResolvedValue(true);
 
 		await request(app).post('/attempts/1');
 
@@ -131,6 +135,7 @@ describe('POST /attempts/:challengeId', () => {
 		} as Challenge);
 
 		jest.mocked(AttemptService.checkIsCorrect).mockResolvedValue(true);
+		jest.mocked(AttemptService.canMakeAttempts).mockResolvedValue(true);
 
 		await request(app).post('/attempts/1');
 
@@ -145,6 +150,7 @@ describe('POST /attempts/:challengeId', () => {
 		} as Challenge);
 
 		jest.mocked(AttemptService.checkIsCorrect).mockResolvedValue(true);
+		jest.mocked(AttemptService.canMakeAttempts).mockResolvedValue(true);
 
 		await request(app).post('/attempts/1');
 
