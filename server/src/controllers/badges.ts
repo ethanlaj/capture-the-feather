@@ -61,15 +61,16 @@ router.post("/autoGenerate", verifyIsAdmin, errorHandler(async (req: Request, re
 	const IMAGE_URL = '/images/badges/default.png';
 
 	const badgesToCreate: any[] = [];
-	let averageChallengesPerLevel = Math.floor(challengeCount / autoGenerateNames.length);
-	let averagePointsPerLevel = Math.floor(totalPoints / autoGenerateNames.length);
+	let averageChallengesPerLevel = Math.max(1, Math.floor(challengeCount / autoGenerateNames.length));
+	let averagePointsPerLevel = Math.max(1, Math.floor(totalPoints / autoGenerateNames.length));
 
 	for (let i = autoGenerateNames.length - 1; i >= 0; i--) {
+		// General badges for "all" categories
 		const allChallengeBasedBadge = {
 			name: autoGenerateNames[i] + " Solver",
 			basedOn: 'all',
 			condition: 'challenges',
-			threshold: (i + 1) + averageChallengesPerLevel,
+			threshold: Math.min(challengeCount, (i + 1) * averageChallengesPerLevel),
 			imageUrl: IMAGE_URL
 		};
 
@@ -77,43 +78,49 @@ router.post("/autoGenerate", verifyIsAdmin, errorHandler(async (req: Request, re
 			name: autoGenerateNames[i] + " Earner",
 			basedOn: 'all',
 			condition: 'points',
-			threshold: (i + 1) * averagePointsPerLevel,
+			threshold: Math.min(totalPoints, (i + 1) * averagePointsPerLevel),
 			imageUrl: IMAGE_URL
 		};
 
-		for (let [categoryName, categoryData] of categoryMap) {
-			const categoryChallengeThreshold = Math.floor(categoryData.count / autoGenerateNames.length);
-			const categoryPointThreshold = Math.floor(categoryData.points / autoGenerateNames.length);
+		badgesToCreate.push(allChallengeBasedBadge, allPointBasedBadge);
+	}
 
-			if (i * categoryChallengeThreshold < categoryData.count) {
-				const categoryChallengeBasedBadge = {
-					name: `${autoGenerateNames[i]} ${categoryName} Solver`,
-					basedOn: 'category',
-					condition: 'challenges',
-					category: categoryName,
-					threshold: categoryData.count,
-					imageUrl: IMAGE_URL
-				};
-				badgesToCreate.push(categoryChallengeBasedBadge);
-				break;
-			}
+	for (let [categoryName, categoryData] of categoryMap) {
+		const categoryChallengeThreshold = Math.max(1, Math.floor(categoryData.count));
+		const categoryPointThreshold = Math.max(1, Math.floor(categoryData.points / categoryData.count));
 
-			if (i * categoryPointThreshold < categoryData.points) {
-				const categoryPointBasedBadge = {
-					name: `${autoGenerateNames[i]} ${categoryName} Earner`,
-					basedOn: 'category',
-					condition: 'points',
-					category: categoryName,
-					threshold: categoryData.points,
-					imageUrl: IMAGE_URL
-				};
-				badgesToCreate.push(categoryPointBasedBadge);
-				break;
-			}
+		const numChallengeTypeToCreate = Math.min(autoGenerateNames.length, Math.max(1, Math.floor(categoryData.count / autoGenerateNames.length)));
+		const numPointTypeToCreate = Math.min(autoGenerateNames.length, Math.max(1, Math.floor(categoryData.points / autoGenerateNames.length)));
+
+		console.log({ numChallengeTypeToCreate })
+		console.log({ numPointTypeToCreate })
+
+		for (let i = 0; i < numChallengeTypeToCreate; i++) {
+			const challengeBasedBadge = {
+				name: autoGenerateNames[i] + " " + categoryName + " Solver",
+				basedOn: 'category',
+				category: categoryName,
+				condition: 'challenges',
+				threshold: Math.min(categoryData.count, (i + 1) * categoryChallengeThreshold),
+				imageUrl: IMAGE_URL
+			};
+
+			badgesToCreate.push(challengeBasedBadge);
 		}
 
-		badgesToCreate.push(allChallengeBasedBadge, allPointBasedBadge);
-	};
+		for (let i = 0; i < numPointTypeToCreate; i++) {
+			const pointBasedBadge = {
+				name: autoGenerateNames[i] + " " + categoryName + " Earner",
+				basedOn: 'category',
+				category: categoryName,
+				condition: 'points',
+				threshold: Math.min(categoryData.points, (i + 1) * categoryPointThreshold),
+				imageUrl: IMAGE_URL
+			};
+
+			badgesToCreate.push(pointBasedBadge);
+		}
+	}
 
 	res.json(await Badge.bulkCreate(badgesToCreate));
 }));
