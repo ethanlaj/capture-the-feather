@@ -22,7 +22,7 @@ jest.mock('../../src/database/models', () => {
 			count: jest.fn(),
 		},
 		PointLog: {
-			count: jest.fn(),
+			sum: jest.fn(),
 		},
 	}
 });
