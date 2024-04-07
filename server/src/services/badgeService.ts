@@ -32,7 +32,7 @@ export class BadgeService {
 			transaction: t
 		});
 
-		const categoryPointCounts = await PointLog.count({
+		const categoryPointCounts = await PointLog.sum('pointsAwarded', {
 			where: {
 				userId,
 				challengeId: categoryChallengeIds

@@ -23,11 +23,11 @@ router.get("/", verifyAccess, errorHandler(async (req: Request, res: Response) =
 }));
 
 const autoGenerateNames = [
-	"Beginner",
-	"Intermediate",
-	"Advanced",
+	"Grandmaster",
 	"Master",
-	"Grandmaster"
+	"Advanced",
+	"Intermediate",
+	"Beginner",
 ]
 
 interface CategoryData {
@@ -65,9 +65,11 @@ router.post("/autoGenerate", verifyIsAdmin, errorHandler(async (req: Request, re
 	let averagePointsPerLevel = Math.max(1, Math.floor(totalPoints / autoGenerateNames.length));
 
 	for (let i = autoGenerateNames.length - 1; i >= 0; i--) {
+		const title = autoGenerateNames[autoGenerateNames.length - i - 1]
+
 		// General badges for "all" categories
 		const allChallengeBasedBadge = {
-			name: autoGenerateNames[i] + " Solver",
+			name: title + " Solver",
 			basedOn: 'all',
 			condition: 'challenges',
 			threshold: Math.min(challengeCount, (i + 1) * averageChallengesPerLevel),
@@ -75,7 +77,7 @@ router.post("/autoGenerate", verifyIsAdmin, errorHandler(async (req: Request, re
 		};
 
 		const allPointBasedBadge = {
-			name: autoGenerateNames[i] + " Earner",
+			name: title + " Earner",
 			basedOn: 'all',
 			condition: 'points',
 			threshold: Math.min(totalPoints, (i + 1) * averagePointsPerLevel),
@@ -86,18 +88,17 @@ router.post("/autoGenerate", verifyIsAdmin, errorHandler(async (req: Request, re
 	}
 
 	for (let [categoryName, categoryData] of categoryMap) {
-		const categoryChallengeThreshold = Math.max(1, Math.floor(categoryData.count));
-		const categoryPointThreshold = Math.max(1, Math.floor(categoryData.points / categoryData.count));
+		const categoryChallengeThreshold = Math.max(1, Math.floor(categoryData.count / autoGenerateNames.length));
+		const categoryPointThreshold = Math.max(1, Math.floor(categoryData.points / Math.min(autoGenerateNames.length, categoryData.count)));
 
-		const numChallengeTypeToCreate = Math.min(autoGenerateNames.length, Math.max(1, Math.floor(categoryData.count / autoGenerateNames.length)));
-		const numPointTypeToCreate = Math.min(autoGenerateNames.length, Math.max(1, Math.floor(categoryData.points / autoGenerateNames.length)));
+		const numChallengeTypeToCreate = Math.min(Math.max(1, Math.floor(categoryData.count / categoryChallengeThreshold)));
+		const numPointTypeToCreate = Math.min(Math.max(1, Math.floor(categoryData.points / categoryPointThreshold)));
 
-		console.log({ numChallengeTypeToCreate })
-		console.log({ numPointTypeToCreate })
+		for (let i = numChallengeTypeToCreate - 1; i >= 0; i--) {
+			const title = autoGenerateNames[numChallengeTypeToCreate - i - 1]
 
-		for (let i = 0; i < numChallengeTypeToCreate; i++) {
 			const challengeBasedBadge = {
-				name: autoGenerateNames[i] + " " + categoryName + " Solver",
+				name: title + " " + categoryName + " Solver",
 				basedOn: 'category',
 				category: categoryName,
 				condition: 'challenges',
@@ -108,9 +109,11 @@ router.post("/autoGenerate", verifyIsAdmin, errorHandler(async (req: Request, re
 			badgesToCreate.push(challengeBasedBadge);
 		}
 
-		for (let i = 0; i < numPointTypeToCreate; i++) {
+		for (let i = numPointTypeToCreate - 1; i >= 0; i--) {
+			const title = autoGenerateNames[numPointTypeToCreate - i - 1]
+
 			const pointBasedBadge = {
-				name: autoGenerateNames[i] + " " + categoryName + " Earner",
+				name: title + " " + categoryName + " Earner",
 				basedOn: 'category',
 				category: categoryName,
 				condition: 'points',
