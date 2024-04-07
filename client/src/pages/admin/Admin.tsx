@@ -10,8 +10,8 @@ const AdminLayout = () => {
 		"/admin/users": "Users",
 		"/admin/challenges": "Challenges",
 		"/admin/attempts": "Attempts",
-		"/admin/settings": "Settings",
 		"/admin/containers": "Containers",
+		"/admin/settings": "Settings",
 	};
 
 	return (

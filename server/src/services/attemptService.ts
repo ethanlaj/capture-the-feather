@@ -1,4 +1,4 @@
-import { Challenge } from "../database/models";
+import { Challenge, Configuration } from "../database/models";
 
 export class AttemptService {
 	static async checkIsCorrect(challenge: Challenge, userAnswer: string) {
@@ -38,5 +38,18 @@ export class AttemptService {
 		}
 
 		return false;
+	}
+
+	static async canMakeAttempts() {
+		const configuration = await Configuration.findOne();
+		if (!configuration) {
+			return true; // If no configuration exists, assume attempts are allowed
+		}
+
+		const currentTime = new Date();
+		const startTime = configuration.startTime;
+		const endTime = configuration.endTime;
+
+		return currentTime >= startTime && currentTime < endTime;
 	}
 }

@@ -22,6 +22,10 @@ router.post("/:challengeId", verifyAccess, errorHandler(async (req: Request, res
 		return res.status(404).send("Challenge not found");
 	}
 
+	if (!await AttemptService.canMakeAttempts()) {
+		return res.status(400).send("Cannot make attempts. Game is not active yet or has ended.");
+	}
+
 	if (challenge.isSolvedOrExhausted) {
 		return res.status(400).send("Challenge is already solved or exhausted");
 	}

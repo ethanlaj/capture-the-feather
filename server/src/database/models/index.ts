@@ -9,3 +9,4 @@ export { _Badge as Badge } from "./badge";
 export { _UserBadge as UserBadge } from "./userBadge";
 export { _Container as Container } from "./container";
 export { _ChallengeFile as ChallengeFile } from "./challengeFile";
+export { _Configuration as Configuration } from "./configuration";

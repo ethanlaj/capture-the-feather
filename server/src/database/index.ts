@@ -9,6 +9,8 @@ export async function initDatabase() {
 			logging: false,
 		});
 
+		models.Configuration.removeAttribute('id');
+
 		await sequelize.sync({ force: false });
 		console.log('Database synced successfully.');
 	} catch (error) {

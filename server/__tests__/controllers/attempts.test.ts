@@ -20,6 +20,7 @@ jest.mock('../../src/middleware/verifyAccess', () => ({
 jest.mock('../../src/services/attemptService', () => ({
 	AttemptService: {
 		checkIsCorrect: jest.fn(),
+		canMakeAttempts: jest.fn().mockResolvedValue(true),
 	},
 }))
 
@@ -103,6 +104,19 @@ describe('POST /attempts/:challengeId', () => {
 			id: 1,
 			isSolvedOrExhausted: true,
 		} as Challenge);
+
+		const response = await request(app).post('/attempts/1');
+
+		expect(response.statusCode).toBe(400);
+	});
+
+	it('returns 400 if attempts are not allowed due to configuration date range', async () => {
+		jest.mocked(Challenge.findByPk).mockResolvedValue({
+			id: 1,
+			isSolvedOrExhausted: false,
+		} as Challenge);
+
+		jest.mocked(AttemptService.canMakeAttempts).mockResolvedValue(false);
 
 		const response = await request(app).post('/attempts/1');
 

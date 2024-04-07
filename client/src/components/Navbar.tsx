@@ -2,6 +2,7 @@ import { useUser } from "@/contexts/UserContext";
 import { MeService } from "@/services/meService";
 import { Button, Layout } from "antd";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import TimeRemainingDisplay from "./TimeRemainingDisplay";
 const { Header } = Layout;
 
 const Navbar = () => {
@@ -26,43 +27,48 @@ const Navbar = () => {
 		navigate("/");
 	};
 
+	const isOnAdminRoute = location.pathname.includes("/admin");
+
 	return (
-		<Header className="flex justify-between px-5">
-			<div className="flex">
-				{Object.entries(navBarLinks).map(([link, text]) => (
-					<NavBarLink key={link} to={link} isActive={selectedKey === link}>
-						{text}
-					</NavBarLink>
-				))}
-			</div>
-			<div className="flex align-middle gap-4">
-				{!isLoggedIn ? (
-					<div className="flex">
-						<NavBarLink
-							key={"/login"}
-							to={"/login"}
-							isActive={selectedKey === "/login"}
-						>
-							Login
+		<>
+			<Header className="flex justify-between px-5">
+				<div className="flex">
+					{Object.entries(navBarLinks).map(([link, text]) => (
+						<NavBarLink key={link} to={link} isActive={selectedKey === link}>
+							{text}
 						</NavBarLink>
-						<NavBarLink
-							key={"/register"}
-							to={"/register"}
-							isActive={selectedKey === "/register"}
-						>
-							Register
-						</NavBarLink>
-					</div>
-				) : (
-					<div className="flex gap-4 items-center">
-						<div className="text-gray-200">Welcome, {user.name}!</div>
-						<Button danger className="bg-transparent" onClick={() => logout()}>
-							Logout
-						</Button>
-					</div>
-				)}
-			</div>
-		</Header>
+					))}
+				</div>
+				<div className="flex align-middle gap-4">
+					{!isLoggedIn ? (
+						<div className="flex">
+							<NavBarLink
+								key={"/login"}
+								to={"/login"}
+								isActive={selectedKey === "/login"}
+							>
+								Login
+							</NavBarLink>
+							<NavBarLink
+								key={"/register"}
+								to={"/register"}
+								isActive={selectedKey === "/register"}
+							>
+								Register
+							</NavBarLink>
+						</div>
+					) : (
+						<div className="flex gap-4 items-center">
+							<div className="text-gray-200">Welcome, {user.name}!</div>
+							<Button danger className="bg-transparent" onClick={() => logout()}>
+								Logout
+							</Button>
+						</div>
+					)}
+				</div>
+			</Header>
+			{!isOnAdminRoute && <TimeRemainingDisplay />}
+		</>
 	);
 };
 

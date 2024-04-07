@@ -14,4 +14,13 @@ export class BadgeService {
 
 		return response.data;
 	}
+
+	static async autoGenerateBadges() {
+		const response = await axios.post<Badge[]>(url + '/autoGenerate');
+		return response.data;
+	}
+
+	static async deleteBadges() {
+		await axios.delete(url + '/all');
+	}
 }
