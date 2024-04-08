@@ -5,6 +5,8 @@ import { Menu } from "antd";
 import { SelectInfo } from "rc-menu/lib/interface";
 import StartEndTime from "@/components/admin/Settings/StartEndTime";
 import Badges from "@/components/admin/Settings/Badges";
+import Export from "@/components/admin/Settings/Export";
+import Import from "@/components/admin/Settings/Import";
 
 type MenuItem = Required<MenuProps>["items"][number];
 
@@ -42,9 +44,9 @@ const Settings: React.FC = () => {
 			case "2":
 				return setSelectedItemComponent(<Badges />);
 			case "3":
-				return setSelectedItemComponent(<div>Export</div>);
+				return setSelectedItemComponent(<Export />);
 			case "4":
-				return setSelectedItemComponent(<div>Import</div>);
+				return setSelectedItemComponent(<Import />);
 			default:
 				return null;
 		}

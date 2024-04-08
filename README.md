@@ -26,3 +26,4 @@ For Milestone 2, the plan is to finish the basic functionality of the platform f
 For Milestone 3, the plan is to create an event/challenge exporter and uploader. This will only include the format created by our platform. If time permits, I may begin to look into how to create a challenge importer for other platforms.
 
 -   [3/29/24] - The UI for starting and stopping containers has been created on the user side. Admins can view all containers and the status of them on the admin/containers view.
+-   [4/7/24] - Settings page has been created for admins. Admins can now edit the start and end time of the game, auto-generate badges, export challenges and related data, and import back in the challenges and related data. On the user side, the start and end time of the game is displayed at the top.

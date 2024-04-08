@@ -7,6 +7,7 @@ import attemptsRouter from "./controllers/attempts";
 import leaderboardRouter from "./controllers/leaderboard";
 import badgeRouter from "./controllers/badges";
 import configurationRouter from "./controllers/configuration";
+import importExportRouter from "./controllers/importExport";
 
 const app: Express = express();
 
@@ -24,5 +25,6 @@ app.use("/attempts", attemptsRouter);
 app.use("/leaderboard", leaderboardRouter);
 app.use("/badges", badgeRouter);
 app.use("/configuration", configurationRouter);
+app.use("/importExport", importExportRouter);
 
 export default app;
