@@ -2,7 +2,7 @@ import request from 'supertest';
 import app from '../../src/app';
 import { verifyAccess } from '../../src/middleware/verifyAccess';
 import { verifyIsAdmin } from '../../src/middleware/verifyIsAdmin';
-import { Challenge, ChallengeFile, Container } from '../../src/database/models';
+import { Challenge, ChallengeFile, Configuration, Container } from '../../src/database/models';
 import path from 'path';
 
 // Mock the verifyAccess middleware
@@ -58,6 +58,9 @@ jest.mock('../../src/database/models', () => {
 			findByPk: jest.fn().mockReturnValue({}),
 			bulkCreate: jest.fn(),
 			destroy: jest.fn(),
+		},
+		Configuration: {
+			findOne: jest.fn(),
 		}
 	}
 });

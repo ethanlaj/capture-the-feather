@@ -40,6 +40,7 @@ interface BaseChallenge {
 	containerPorts: number[];
 	containerInstructions: string;
 	containerImage: string;
+	order: number;
 }
 
 export interface MultipleChoiceOption {

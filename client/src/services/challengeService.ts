@@ -6,9 +6,19 @@ import { UserContainer, UserContainerWithK8Data } from '@/types/UserContainer';
 const url = baseUrl + '/challenges';
 const adminUrl = url + '/admin';
 
+interface GetChallengesUserResponse {
+	challenges: Challenge[];
+	categoryOrder: string[];
+}
+
 export class ChallengeService {
-	static async getChallenges(isAdmin: boolean): Promise<Challenge[]> {
-		const response = await axios.get(isAdmin ? adminUrl : url);
+	static async getChallengesAsUser() {
+		const response = await axios.get<GetChallengesUserResponse>(url);
+		return response.data;
+	}
+
+	static async getChallengesAsAdmin() {
+		const response = await axios.get<Challenge[]>(adminUrl);
 		return response.data;
 	}
 

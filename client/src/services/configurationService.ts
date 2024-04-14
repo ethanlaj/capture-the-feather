@@ -12,4 +12,12 @@ export class ConfigurationService {
 		const response = await axios.put<Configuration>(baseUrl + '/configuration', configuration);
 		return response.data;
 	}
+
+	static async reorderCategories(categories: string[]) {
+		await axios.post(baseUrl + '/configuration/reorder/categories', { categories });
+	}
+
+	static async reorderChallenges(category: string, challenges: number[]) {
+		await axios.post(baseUrl + '/configuration/reorder/category/' + category, { challenges });
+	}
 }

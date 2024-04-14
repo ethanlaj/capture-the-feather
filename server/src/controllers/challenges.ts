@@ -1,7 +1,7 @@
 import { Request, Response, Router } from "express";
 import { Transaction } from "sequelize";
 import errorHandler from "../middleware/errorHandler";
-import { Challenge, ChallengeFile, Container, MultipleChoiceOption, ShortAnswerOption, User } from "../database/models";
+import { Challenge, ChallengeFile, Configuration, Container, MultipleChoiceOption, ShortAnswerOption, User } from "../database/models";
 import { ChallengeService } from "../services/challengeService";
 import { verifyAccess } from "../middleware/verifyAccess";
 import { verifyIsAdmin } from "../middleware/verifyIsAdmin";
@@ -19,13 +19,15 @@ router.get("/", verifyAccess, errorHandler(async (req: Request, res: Response) =
 		.scope({ method: ['withUserAttempts', req.payload!.userId] })
 		.findAll();
 
+	const config = await Configuration.findOne({ attributes: ["categoryOrder"] });
+
 	for (let challenge of challenges) {
 		if (!challenge.isSolvedOrExhausted) {
 			ChallengeService.removeAnswers(challenge);
 		}
 	}
 
-	return res.json(challenges);
+	return res.json({ challenges, categoryOrder: config?.categoryOrder });
 }));
 
 router.get("/admin/:id", verifyIsAdmin, errorHandler(async (req: Request, res: Response) => {

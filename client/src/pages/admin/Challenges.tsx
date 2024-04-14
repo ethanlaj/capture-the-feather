@@ -14,7 +14,7 @@ const Challenges = () => {
 
 	useEffect(() => {
 		async function getChallenges() {
-			const data = await ChallengeService.getChallenges(true);
+			const data = await ChallengeService.getChallengesAsAdmin();
 			setChallenges(data);
 		}
 
