@@ -9,8 +9,16 @@ export class ClientError {
 			return;
 		}
 
-		if (error.response && error.response.data && typeof error.response.data === 'string') {
-			this.message = error.response.data;
+		if (error.response && error.response.data) {
+			if (typeof error.response.data === 'string') {
+				this.message = error.response.data;
+			} else if (error.response.data.error && typeof error.response.data.error === 'string') {
+				this.message = error.response.data.error;
+			} else if (error.response.data.message && typeof error.response.data.message === 'string') {
+				this.message = error.response.data.message;
+			} else {
+				this.message = "An unexpected error occurred.";
+			}
 		} else if (error.message) {
 			this.message = error.message;
 		} else {
@@ -19,6 +27,7 @@ export class ClientError {
 	}
 
 	toast() {
+		console.log("TOASTING ERROR", this.message)
 		if (this.message) {
 			notification.error({
 				message: this.message,

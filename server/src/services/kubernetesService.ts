@@ -120,7 +120,14 @@ export class KubernetesService {
 		return (await k8sApi.createNamespace(namespace)).body
 	}
 
-	private static async createDeploymentInNamespace(challengeId: number, userId: number, namespace: string, containerImage: string, ports: number[]) {
+	private static async createDeploymentInNamespace(
+		challengeId: number,
+		userId: number,
+		namespace: string,
+		containerImage: string,
+		ports: number[],
+		retry = false
+	): Promise<k8s.V1Deployment> {
 		const appName = `app-${challengeId}-${userId}`;
 		const containerPorts = ports.map(port => ({ containerPort: port, name: `port-${port}` }));
 
@@ -159,10 +166,20 @@ export class KubernetesService {
 			},
 		};
 
-		return (await k8sAppsApi.createNamespacedDeployment(namespace, deployment)).body;
+		try {
+			return (await k8sAppsApi.createNamespacedDeployment(namespace, deployment)).body;
+		} catch (error: any) {
+			if (error.statusCode === 409 && !retry) {
+				// Delete existing deployment and try again
+				await this.deleteDeployment(challengeId, userId);
+				return this.createDeploymentInNamespace(challengeId, userId, namespace, containerImage, ports, true);
+			}
+
+			throw error;
+		}
 	}
 
-	static async createServiceForDeployment(challengeId: number, userId: number, namespace: string, ports: number[]) {
+	static async createServiceForDeployment(challengeId: number, userId: number, namespace: string, ports: number[], retry = false) {
 		const servicePorts = ports.map(port => ({
 			name: `port-${port}`,
 			protocol: 'TCP',

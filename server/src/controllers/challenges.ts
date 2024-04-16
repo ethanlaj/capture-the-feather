@@ -332,13 +332,13 @@ router.post("/:id/container", verifyAccess, errorHandler(async (req: Request, re
 
 	const container = await Container.findOne({
 		where: {
-			challengeId,
+			// challengeId,
 			userId
 		}
 	});
 
 	if (container) {
-		return res.status(400).json({ error: "Container already exists for this user" });
+		return res.status(400).json({ error: "User already has a running container" });
 	}
 
 	try {
