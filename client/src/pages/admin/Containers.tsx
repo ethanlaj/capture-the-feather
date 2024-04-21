@@ -25,6 +25,12 @@ const Containers = () => {
 
 	const columns: ColumnsType<UserContainerWithK8Data> = [
 		{
+			title: "User",
+			dataIndex: "user",
+			key: "user",
+			render: (user: UserContainerWithK8Data["user"]) => user.name,
+		},
+		{
 			title: "Challenge Name",
 			dataIndex: "challenge",
 			key: "challengeName",
