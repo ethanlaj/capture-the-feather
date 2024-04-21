@@ -1,6 +1,9 @@
 import { Button } from "antd";
+import { useNavigate } from "react-router-dom";
 
 const Home = () => {
+	const navigate = useNavigate();
+
 	return (
 		<div className="bg-gray-100 flex flex-col items-center justify-center">
 			<img src="/ctf-logo.png" alt="CTF Logo" className="mb-8 max-w-sm" />
@@ -14,7 +17,7 @@ const Home = () => {
 					skills.
 				</p>
 
-				<Button type="primary" size="large">
+				<Button type="primary" size="large" onClick={() => navigate("/challenges")}>
 					Start a Challenge
 				</Button>
 			</div>
