@@ -9,8 +9,6 @@ const port = process.env.PORT || 3001;
 
 load();
 
-console.log(path.join(__dirname, 'static'))
-
 app.use(express.static(path.join(__dirname, 'static')));
 
 app.listen(port, () => {
