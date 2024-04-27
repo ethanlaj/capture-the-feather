@@ -4,6 +4,29 @@ Capture the Feather is a capture the flag platform that will focus on the learni
 
 As a capture the flag platform, users will be able to sign up for the platform and try to complete cybersecurtity challenges created by an administrator. These challenges could range from simple web challenges to reverse engineering challenges. Users and admin will be able to keep track of who completes challenges the quickest and who has the most points.
 
+## Hosting Instructions
+
+1. Clone the repository
+1. Copy the `.env.example` file in the root directory to a new file called `.env`
+1. Fill in the `.env` file with the appropriate values.
+1. Run `docker-compose up` in the root directory. This will start the database, backend, and frontend.
+1. Go to `http://localhost:3000` in your browser to view the frontend.
+1. Click on the `Register` button on the top right to create an account. The first account created will be an admin account.
+1. If you need to import challenges from another source, such as [here](https://github.com/csivitu/ctf-challenges/tree/master), see the README in the `importer` directory.
+
+## Development Setup Instructions
+
+1. Clone the repository
+1. Run `npm install` in the root directory.
+1. Copy the `.env.example` file in the root directory to a new file called `.env`
+1. Fill in the `.env` file with the appropriate values.
+1. Run `docker-compose up -d db` in the root directory. This will start the database.
+1. Navigate into the `server` directory.
+1. Run `npm install` in the `server` directory.
+1. Navigate back to the root directory and then into the `client` directory.
+1. Run `npm install` in the `client` directory.
+1. Navigate back to the root directory and run `npm run dev` to start the backend and frontend.
+
 ## Timeline of Completion
 
 _For each milestone, I will add some unit tests to backend code only as it will contain the most logic._

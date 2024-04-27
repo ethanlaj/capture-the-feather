@@ -25,12 +25,15 @@ router.post("/register", requireBody(['email', 'name', 'password']), errorHandle
 		return;
 	}
 
+	const isFirstUser = await User.count() === 0;
+
 	const hashedPassword = await hashPassword(password);
 
 	const newUser = await User.create({
 		email,
 		name,
 		passwordHash: hashedPassword,
+		isAdmin: isFirstUser,
 	});
 
 	const tokens = await generateTokens(newUser.id, newUser.isAdmin);
