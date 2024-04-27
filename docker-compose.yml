@@ -4,7 +4,7 @@ services:
   db:
     image: mysql
     environment:
-      MYSQL_ROOT_PASSWORD: ROOT_PWD
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PWD}
       MYSQL_DATABASE: capture-the-feather
     ports:
       - "1459:3306"
@@ -19,9 +19,9 @@ services:
       - server
   server:
     environment:
-      CTF_DB_URL: "mysql://root:ROOT_PWD@db:3306/capture-the-feather"
-      ACCESS_TOKEN_SECRET: "LOLUWISH"
-      REFRESH_TOKEN_SECRET: "HAHALOLUWISH"
+      CTF_DB_URL: "mysql://root:${DB_ROOT_PWD}@db:3306/capture-the-feather"
+      ACCESS_TOKEN_SECRET: ${ACCESS_TOKEN_SECRET}
+      REFRESH_TOKEN_SECRET: ${REFRESH_TOKEN_SECRET}
     build:
       context: ./server
     ports:
