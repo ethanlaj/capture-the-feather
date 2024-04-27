@@ -25,6 +25,7 @@ jest.mock('../../src/database/models', () => {
 			findByPk: jest.fn(),
 			findOne: jest.fn(),
 			create: jest.fn().mockResolvedValue({ id: 1, isAdmin: false }),
+			count: jest.fn(),
 		},
 		RefreshToken: {
 			findByPk: jest.fn(),
@@ -86,6 +87,7 @@ describe('POST /me/register', () => {
 		jest.mocked(bcrypt.hash).mockImplementation((_data: string | Buffer, _saltOrRounds: string | number): Promise<string> => {
 			return Promise.resolve('hashedPassword');
 		});
+		jest.mocked(User.count).mockResolvedValue(1);
 
 		const response = await request(app).post('/me/register')
 			.send({
@@ -98,6 +100,30 @@ describe('POST /me/register', () => {
 			email: 'a',
 			name: 'a',
 			passwordHash: 'hashedPassword',
+			isAdmin: false,
+		});
+		expect(response.status).toBe(200);
+	});
+
+	it('first user should be created as an admin', async () => {
+		jest.mocked(User.findOne).mockResolvedValue(null);
+		jest.mocked(bcrypt.hash).mockImplementation((_data: string | Buffer, _saltOrRounds: string | number): Promise<string> => {
+			return Promise.resolve('hashedPassword');
+		});
+		jest.mocked(User.count).mockResolvedValue(0);
+
+		const response = await request(app).post('/me/register')
+			.send({
+				email: 'a',
+				name: 'a',
+				password: 'a',
+			});
+
+		expect(User.create).toHaveBeenCalledWith({
+			email: 'a',
+			name: 'a',
+			passwordHash: 'hashedPassword',
+			isAdmin: true,
 		});
 		expect(response.status).toBe(200);
 	});
