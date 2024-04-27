@@ -3,7 +3,6 @@ version: '2.23.3'
 services:
   db:
     image: mysql
-    restart: always
     environment:
       MYSQL_ROOT_PASSWORD: ROOT_PWD
       MYSQL_DATABASE: capture-the-feather
@@ -11,6 +10,24 @@ services:
       - "1459:3306"
     volumes:
       - db_data:/var/lib/mysql
+  client:
+    build:
+      context: ./client
+    ports:
+      - "3000:3000"
+    depends_on:
+      - server
+  server:
+    environment:
+      CTF_DB_URL: "mysql://root:ROOT_PWD@db:3306/capture-the-feather"
+      ACCESS_TOKEN_SECRET: "LOLUWISH"
+      REFRESH_TOKEN_SECRET: "HAHALOLUWISH"
+    build:
+      context: ./server
+    ports:
+      - "3001:3001"
+    depends_on:
+      - db
 
 volumes:
   db_data:

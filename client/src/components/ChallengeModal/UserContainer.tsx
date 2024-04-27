@@ -42,10 +42,10 @@ const UserContainer = ({ challenge }: Props) => {
 			return formatDuration(duration);
 		};
 
-		let interval = null;
+		let interval: number | null = null;
 		if (currentContainer) {
 			getAndSetTimeRemaining();
-			interval = setInterval(getAndSetTimeRemaining, 1000);
+			interval = setInterval(getAndSetTimeRemaining, 1000) as unknown as number;
 		} else if (!currentContainer && interval) {
 			clearInterval(interval);
 		}
