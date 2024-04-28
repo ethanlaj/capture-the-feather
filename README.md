@@ -4,6 +4,10 @@ Capture the Feather is a capture the flag platform that will focus on the learni
 
 As a capture the flag platform, users will be able to sign up for the platform and try to complete cybersecurtity challenges created by an administrator. These challenges could range from simple web challenges to reverse engineering challenges. Users and admin will be able to keep track of who completes challenges the quickest and who has the most points.
 
+## Pre-Requisite for Hosting Containers
+
+If you plan to hold challenges that utilize containers, you'll need to ensure that you are running the application on a machine that has Kubernetes installed and setup. The currently only tested method is using Docker Desktop with Kubernetes enabled. You can find more information on how to set this up [here](https://docs.docker.com/desktop/kubernetes/).
+
 ## Hosting Instructions
 
 1. Clone the repository
@@ -15,6 +19,7 @@ As a capture the flag platform, users will be able to sign up for the platform a
 1. Click on the `Register` button on the top right to create an account. The first account created will be an admin account.
 1. If you need to import challenges from another source, such as [here](https://github.com/csivitu/ctf-challenges/tree/master), see the README in the `importer` directory.
 1. If you need to make changes to anything, make the changes and run `docker-compose up -d --build` to rebuild and restart the containers. **You will need to do this if you use the importer project to import challenges.**
+1. See the section above called "Pre-Requisite for Hosting Containers" if you plan to host challenges that utilize containers.
 
 ## Development Setup Instructions
 
@@ -28,6 +33,7 @@ As a capture the flag platform, users will be able to sign up for the platform a
 1. Navigate back to the root directory and then into the `client` directory.
 1. Run `npm install` in the `client` directory.
 1. Navigate back to the root directory and run `npm run dev` to start the backend and frontend.
+1. See the section above called "Pre-Requisite for Hosting Containers" if you plan to develop functionality related to challenge containers.
 
 ## Timeline of Completion
 
