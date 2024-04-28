@@ -10,7 +10,7 @@ type: dynamic
 
 decay: 450
 
-minimum: 100w
+minimum: 100
 
 flags:
     - csictf{gr34t_m1nds_th1nk_4l1ke}

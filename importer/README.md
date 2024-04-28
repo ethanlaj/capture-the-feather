@@ -11,3 +11,4 @@ A good example of where to find such challenges is [here](https://github.com/csi
 1. Run `npm install` in the `importer` directory.
 1. Copy the challenges you want to import into a new folder in the `importer` project. The import script will look for all files named 'challenge.yml' and attempt to import them.
 1. Run `npm run import` in the root directory. Follow the prompts to import the challenges.
+1. Go back to the `root` directory and run `docker-compose up -d --build` to rebuild and restart the containers.
